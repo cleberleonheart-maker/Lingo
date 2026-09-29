@@ -11,15 +11,15 @@ export const DE: Unit = {
       subtitle: 'hallo, guten tag',
       perSession: 10,
       exercises: [
-        { kind: 'choice', id: 'e1', prompt: 'Wie sagt man "gute Nacht"?', answer: 'c', options: [{ id: 'a', text: 'guten Morgen' }, { id: 'b', text: 'guten Tag' }, { id: 'c', text: 'gute Nacht' }, { id: 'd', text: 'tschüss' }] },
+        { kind: 'choice', id: 'e1', prompt: 'Como você diz "boa noite" em alemão?', answer: 'c', options: [{ id: 'a', text: 'guten Morgen' }, { id: 'b', text: 'guten Tag' }, { id: 'c', text: 'gute Nacht' }, { id: 'd', text: 'tschüss' }] },
         { kind: 'translate', id: 'e2', from: 'Oi!', to: 'alemão', accept: ['hallo', 'hi'] },
         { kind: 'listen', id: 'e3', speak: 'Guten Tag', accept: ['guten tag'] },
         { kind: 'fill', id: 'e4', before: 'Gute ', after: '!', answer: 'Nacht', accept: ['Nacht', 'nacht'] },
       ],
       pool: [
-        { kind: 'choice', id: 'p1', prompt: 'Wie sagt man "gute Nacht"?', answer: 'c', options: [{ id: 'a', text: 'guten Morgen' }, { id: 'b', text: 'guten Tag' }, { id: 'c', text: 'gute Nacht' }, { id: 'd', text: 'tschüss' }] },
-        { kind: 'choice', id: 'p2', prompt: 'Wie sagt man "auf Wiedersehen"?', answer: 'a', options: [{ id: 'a', text: 'auf Wiedersehen' }, { id: 'b', text: 'guten Morgen' }, { id: 'c', text: 'bitte' }, { id: 'd', text: 'vielen Dank' }] },
-        { kind: 'choice', id: 'p3', prompt: 'Wie sagt man "vielen Dank"?', answer: 'b', options: [{ id: 'a', text: 'danke schön' }, { id: 'b', text: 'vielen Dank' }, { id: 'c', text: 'bitte' }, { id: 'd', text: 'gute Nacht' }] },
+        { kind: 'choice', id: 'p1', prompt: 'Como você diz "boa noite" em alemão?', answer: 'c', options: [{ id: 'a', text: 'guten Morgen' }, { id: 'b', text: 'guten Tag' }, { id: 'c', text: 'gute Nacht' }, { id: 'd', text: 'tschüss' }] },
+        { kind: 'choice', id: 'p2', prompt: 'E "adeus"?', answer: 'a', options: [{ id: 'a', text: 'auf Wiedersehen' }, { id: 'b', text: 'guten Morgen' }, { id: 'c', text: 'bitte' }, { id: 'd', text: 'vielen Dank' }] },
+        { kind: 'choice', id: 'p3', prompt: 'E "muito obrigado"?', answer: 'b', options: [{ id: 'a', text: 'danke schön' }, { id: 'b', text: 'vielen Dank' }, { id: 'c', text: 'bitte' }, { id: 'd', text: 'gute Nacht' }] },
         { kind: 'translate', id: 'p4', from: 'Oi!', to: 'alemão', accept: ['hallo', 'hi'] },
         { kind: 'translate', id: 'p5', from: 'Bom dia.', to: 'alemão', accept: ['guten tag'] },
         { kind: 'translate', id: 'p6', from: 'Boa noite.', to: 'alemão', accept: ['gute nacht'] },
@@ -76,7 +76,7 @@ export const DE: Unit = {
       pool: [
         { kind: 'fill', id: 'p1', before: 'Ich komme ', after: ' Deutschland.', answer: 'aus', accept: ['aus'] },
         { kind: 'fill', id: 'p2', before: 'Ich komme aus ', after: '.', answer: 'Deutschland', accept: ['deutschland'] },
-        { kind: 'choice', id: 'p3', prompt: 'Wie fragt man "woher kommst du?"', answer: 'a', options: [{ id: 'a', text: 'Woher kommst du?' }, { id: 'b', text: 'Wie geht es dir?' }, { id: 'c', text: 'Was kostet das?' }] },
+        { kind: 'choice', id: 'p3', prompt: 'Como se pergunta "de onde você vem"?', answer: 'a', options: [{ id: 'a', text: 'Woher kommst du?' }, { id: 'b', text: 'Wie geht es dir?' }, { id: 'c', text: 'Was kostet das?' }] },
         { kind: 'choice', id: 'p4', prompt: 'O que "Ich spreche Deutsch" quer dizer?', answer: 'c', options: [{ id: 'a', text: 'Eu sou alemão' }, { id: 'b', text: 'Eu estou na Alemanha' }, { id: 'c', text: 'Eu falo alemão' }] },
         { kind: 'translate', id: 'p5', from: 'Venho do Brasil.', to: 'alemão', accept: ['ich komme aus brasilien'] },
         { kind: 'translate', id: 'p6', from: 'Meu nome é Peter.', to: 'alemão', accept: ['ich heiße peter', 'ich heisse peter'] },
@@ -99,7 +99,7 @@ export const DE: Unit = {
     id: 'de-u1-exam',
     title: 'Prüfung der Einheit 1',
     exercises: [
-      { kind: 'choice', id: 'q1', prompt: '"Gute Nacht" bedeutet…', answer: 'a', options: [{ id: 'a', text: 'boa noite' }, { id: 'b', text: 'bom dia' }, { id: 'c', text: 'adeus' }] },
+      { kind: 'choice', id: 'q1', prompt: '"Gute Nacht" significa…', answer: 'a', options: [{ id: 'a', text: 'boa noite' }, { id: 'b', text: 'bom dia' }, { id: 'c', text: 'adeus' }] },
       { kind: 'translate', id: 'q2', from: 'Meu nome é Paul.', to: 'alemão', accept: ['ich heiße paul', 'ich heisse paul'] },
       { kind: 'fill', id: 'q3', before: 'Ich komme ', after: ' Berlin.', answer: 'aus', accept: ['aus'] },
       { kind: 'choice', id: 'q4', prompt: 'Como responde a "Wie geht es dir?"', answer: 'b', options: [{ id: 'a', text: 'Ich heiße Ana' }, { id: 'b', text: 'Gut, danke' }, { id: 'c', text: 'Ich komme aus Brasilien' }] },

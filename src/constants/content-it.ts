@@ -11,15 +11,15 @@ export const IT: Unit = {
       subtitle: 'ciao, buongiorno',
       perSession: 10,
       exercises: [
-        { kind: 'choice', id: 'e1', prompt: 'Come si dice "buonanotte"?', answer: 'c', options: [{ id: 'a', text: 'buongiorno' }, { id: 'b', text: 'buonasera' }, { id: 'c', text: 'buonanotte' }, { id: 'd', text: 'arrivederci' }] },
+        { kind: 'choice', id: 'e1', prompt: 'Como você diz "boa noite" em italiano?', answer: 'c', options: [{ id: 'a', text: 'buongiorno' }, { id: 'b', text: 'buonasera' }, { id: 'c', text: 'buonanotte' }, { id: 'd', text: 'arrivederci' }] },
         { kind: 'translate', id: 'e2', from: 'Oi!', to: 'italiano', accept: ['ciao'] },
         { kind: 'listen', id: 'e3', speak: 'Buongiorno', accept: ['buongiorno'] },
         { kind: 'fill', id: 'e4', before: 'Buona ', after: '!', answer: 'notte', accept: ['notte'] },
       ],
       pool: [
-        { kind: 'choice', id: 'p1', prompt: 'Come si dice "buonanotte"?', answer: 'c', options: [{ id: 'a', text: 'buongiorno' }, { id: 'b', text: 'buonasera' }, { id: 'c', text: 'buonanotte' }, { id: 'd', text: 'arrivederci' }] },
-        { kind: 'choice', id: 'p2', prompt: 'Come si dice "arrivederci"?', answer: 'a', options: [{ id: 'a', text: 'arrivederci' }, { id: 'b', text: 'buongiorno' }, { id: 'c', text: 'per favore' }, { id: 'd', text: 'molte grazie' }] },
-        { kind: 'choice', id: 'p3', prompt: 'Come si dice "per favore"?', answer: 'b', options: [{ id: 'a', text: 'grazie' }, { id: 'b', text: 'per favore' }, { id: 'c', text: 'arrivederci' }, { id: 'd', text: 'buonanotte' }] },
+        { kind: 'choice', id: 'p1', prompt: 'Como você diz "boa noite" em italiano?', answer: 'c', options: [{ id: 'a', text: 'buongiorno' }, { id: 'b', text: 'buonasera' }, { id: 'c', text: 'buonanotte' }, { id: 'd', text: 'arrivederci' }] },
+        { kind: 'choice', id: 'p2', prompt: 'E "adeus"?', answer: 'a', options: [{ id: 'a', text: 'arrivederci' }, { id: 'b', text: 'buongiorno' }, { id: 'c', text: 'per favore' }, { id: 'd', text: 'molte grazie' }] },
+        { kind: 'choice', id: 'p3', prompt: 'E "se favor"?', answer: 'b', options: [{ id: 'a', text: 'grazie' }, { id: 'b', text: 'per favore' }, { id: 'c', text: 'arrivederci' }, { id: 'd', text: 'buonanotte' }] },
         { kind: 'translate', id: 'p4', from: 'Oi!', to: 'italiano', accept: ['ciao'] },
         { kind: 'translate', id: 'p5', from: 'Bom dia.', to: 'italiano', accept: ['buongiorno'] },
         { kind: 'translate', id: 'p6', from: 'Boa noite.', to: 'italiano', accept: ['buonanotte'] },
@@ -76,7 +76,7 @@ export const IT: Unit = {
       pool: [
         { kind: 'fill', id: 'p1', before: 'Vengo ', after: ' Brasile.', answer: 'dal', accept: ['dal', 'da'] },
         { kind: 'fill', id: 'p2', before: 'Vengo ', after: ' Francia.', answer: 'dalla', accept: ['dalla', 'da'] },
-        { kind: 'choice', id: 'p3', prompt: 'Come si chiede "di dove sei?"', answer: 'a', options: [{ id: 'a', text: 'Di dove sei?' }, { id: 'b', text: 'Come stai?' }, { id: 'c', text: 'Quanto costa?' }] },
+        { kind: 'choice', id: 'p3', prompt: 'Como se pergunta "de onde você é"?', answer: 'a', options: [{ id: 'a', text: 'Di dove sei?' }, { id: 'b', text: 'Come stai?' }, { id: 'c', text: 'Quanto costa?' }] },
         { kind: 'choice', id: 'p4', prompt: 'O que "Parlo italiano" quer dizer?', answer: 'c', options: [{ id: 'a', text: 'Eu sou italiano' }, { id: 'b', text: 'Eu estou na Itália' }, { id: 'c', text: 'Eu falo italiano' }] },
         { kind: 'translate', id: 'p5', from: 'Venho do Brasil.', to: 'italiano', accept: ['vengo dal brasil'] },
         { kind: 'translate', id: 'p6', from: 'Meu nome é Paolo.', to: 'italiano', accept: ['mi chiamo paolo'] },

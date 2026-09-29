@@ -11,15 +11,15 @@ export const FR: Unit = {
       subtitle: 'bonjour, bonsoir',
       perSession: 10,
       exercises: [
-        { kind: 'choice', id: 'e1', prompt: 'Comment on dit "bonne nuit" ?', answer: 'c', options: [{ id: 'a', text: 'bonjour' }, { id: 'b', text: 'bonne soirée' }, { id: 'c', text: 'bonne nuit' }, { id: 'd', text: 'adieu' }] },
+        { kind: 'choice', id: 'e1', prompt: 'Como você diz "boa noite" em francês?', answer: 'c', options: [{ id: 'a', text: 'bonjour' }, { id: 'b', text: 'bonne soirée' }, { id: 'c', text: 'bonne nuit' }, { id: 'd', text: 'adieu' }] },
         { kind: 'translate', id: 'e2', from: 'Oi!', to: 'francês', accept: ['salut', 'bonjour', 'coucou'] },
         { kind: 'listen', id: 'e3', speak: 'Bonsoir', accept: ['bonsoir'] },
         { kind: 'fill', id: 'e4', before: 'Bonne ', after: ' !', answer: 'nuit', accept: ['nuit'] },
       ],
       pool: [
-        { kind: 'choice', id: 'p1', prompt: 'Comment on dit "bonne nuit" ?', answer: 'c', options: [{ id: 'a', text: 'bonjour' }, { id: 'b', text: 'bonne soirée' }, { id: 'c', text: 'bonne nuit' }, { id: 'd', text: 'adieu' }] },
-        { kind: 'choice', id: 'p2', prompt: 'Comment on dit "bonne soirée" ?', answer: 'b', options: [{ id: 'a', text: 'bonne nuit' }, { id: 'b', text: 'bonne soirée' }, { id: 'c', text: 'bonjour' }, { id: 'd', text: 'merci' }] },
-        { kind: 'choice', id: 'p3', prompt: 'Comment on dit "au revoir" ?', answer: 'a', options: [{ id: 'a', text: 'au revoir' }, { id: 'b', text: 'bonsoir' }, { id: 'c', text: 'merci' }, { id: 'd', text: "s'il vous plaît" }] },
+        { kind: 'choice', id: 'p1', prompt: 'Como você diz "boa noite" em francês?', answer: 'c', options: [{ id: 'a', text: 'bonjour' }, { id: 'b', text: 'bonne soirée' }, { id: 'c', text: 'bonne nuit' }, { id: 'd', text: 'adieu' }] },
+        { kind: 'choice', id: 'p2', prompt: 'E "boa tarde"?', answer: 'b', options: [{ id: 'a', text: 'bonne nuit' }, { id: 'b', text: 'bonne soirée' }, { id: 'c', text: 'bonjour' }, { id: 'd', text: 'merci' }] },
+        { kind: 'choice', id: 'p3', prompt: 'E "adeus"?', answer: 'a', options: [{ id: 'a', text: 'au revoir' }, { id: 'b', text: 'bonsoir' }, { id: 'c', text: 'merci' }, { id: 'd', text: "s'il vous plaît" }] },
         { kind: 'translate', id: 'p4', from: 'Bom dia.', to: 'francês', accept: ['bonjour'] },
         { kind: 'translate', id: 'p5', from: 'Boa tarde.', to: 'francês', accept: ['bonsoir'] },
         { kind: 'translate', id: 'p6', from: 'Boa noite.', to: 'francês', accept: ['bonne nuit'] },
@@ -76,7 +76,7 @@ export const FR: Unit = {
       pool: [
         { kind: 'fill', id: 'p1', before: 'Je viens ', after: ' Brésil.', answer: 'du', accept: ['du', 'de'] },
         { kind: 'fill', id: 'p2', before: 'Je viens ', after: ' France.', answer: 'de', accept: ['de', 'du'] },
-        { kind: 'choice', id: 'p3', prompt: 'Comment on demande "d’où venez-vous ?"', answer: 'a', options: [{ id: 'a', text: "D'où venez-vous ?" }, { id: 'b', text: 'Comment ça va ?' }, { id: 'c', text: 'Ça coûte combien ?' }] },
+        { kind: 'choice', id: 'p3', prompt: 'Como se pergunta "de onde você vem"?', answer: 'a', options: [{ id: 'a', text: "D'où venez-vous ?" }, { id: 'b', text: 'Comment ça va ?' }, { id: 'c', text: 'Ça coûte combien ?' }] },
         { kind: 'choice', id: 'p4', prompt: 'O que "Je viens du Brésil" quer dizer?', answer: 'b', options: [{ id: 'a', text: 'Eu me chamo Ana' }, { id: 'b', text: 'Eu venho do Brasil' }, { id: 'c', text: 'Eu vou para o Brasil' }] },
         { kind: 'translate', id: 'p5', from: 'Venho do Brasil.', to: 'francês', accept: ['je viens du bresil'] },
         { kind: 'translate', id: 'p6', from: 'Meu nome é Pierre.', to: 'francês', accept: ["je m'appelle pierre"] },
@@ -99,7 +99,7 @@ export const FR: Unit = {
     id: 'fr-u1-exam',
     title: "Examen de l'unité 1",
     exercises: [
-      { kind: 'choice', id: 'q1', prompt: '"Bonne nuit" signifie…', answer: 'a', options: [{ id: 'a', text: 'boa noite' }, { id: 'b', text: 'bom dia' }, { id: 'c', text: 'adeus' }] },
+      { kind: 'choice', id: 'q1', prompt: '"Bonne nuit" significa…', answer: 'a', options: [{ id: 'a', text: 'boa noite' }, { id: 'b', text: 'bom dia' }, { id: 'c', text: 'adeus' }] },
       { kind: 'translate', id: 'q2', from: 'Meu nome é Paul.', to: 'francês', accept: ["je m'appelle paul"] },
       { kind: 'fill', id: 'q3', before: 'Je viens ', after: ' Paris.', answer: 'de', accept: ['de', 'du'] },
       { kind: 'choice', id: 'q4', prompt: 'Como responde a "Ça va ?"', answer: 'b', options: [{ id: 'a', text: "Je m'appelle Ana" }, { id: 'b', text: 'Ça va bien, merci' }, { id: 'c', text: 'Je viens du Brésil' }] },

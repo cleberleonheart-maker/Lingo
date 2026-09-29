@@ -21,7 +21,7 @@ export const JA: Unit = {
         { kind: 'fill', id: 'e4', before: 'ohayou ', after: '!', answer: 'gozaimasu', accept: ['gozaimasu'] },
       ],
       pool: [
-        { kind: 'choice', id: 'p1', prompt: '「おはようございます」は?|Qual destas frases é o bom-dia?', answer: 'b', options: [{ id: 'a', text: 'こんばんは' }, { id: 'b', text: 'おはようございます' }, { id: 'c', text: 'さようなら' }] },
+        { kind: 'choice', id: 'p1', prompt: 'Qual destas frases significa "bom dia"?', answer: 'b', options: [{ id: 'a', text: 'こんばんは' }, { id: 'b', text: 'おはようございます' }, { id: 'c', text: 'さようなら' }] },
         { kind: 'choice', id: 'p2', prompt: '「こんばんは」はいつ使いますか?|Quando se usa "konbanwa"?', answer: 'b', options: [{ id: 'a', text: '朝 (manhã)' }, { id: 'b', text: '夕方・夜 (noite)' }, { id: 'c', text: 'お昼 (tarde)' }] },
         { kind: 'choice', id: 'p3', prompt: '「ありがとうございます」は何の挨拶?|O que "arigatou gozaimasu" é?', answer: 'c', options: [{ id: 'a', text: 'さようなら (adeus)' }, { id: 'b', text: 'こんにちは (olá)' }, { id: 'c', text: 'ありがとう (obrigado)' }] },
         { kind: 'translate', label: 'leia em romaji: kana -> teclado', id: 'p4', from: 'こんにちは', to: 'japonês (romaji)', accept: ['konnichiwa'] },
