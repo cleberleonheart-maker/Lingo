@@ -14,10 +14,12 @@ export default function ExamScreen() {
   for (const language of ['en', 'es', 'fr', 'de', 'it', 'ja'] as LanguageId[]) {
     const exam = getExam(language, id);
     if (!exam) continue;
+    const goToMap = () => router.replace({ pathname: '/', params: { lang: language } });
     return (
       <ExercisePlayer
         exercises={exam.exercises}
         language={language}
+        onExit={goToMap}
         onFinish={({ correct, total }) => {
           void completeExam(exam.id).then(() => {
             router.replace({ pathname: '/result', params: { id: exam.id, correct: String(correct), total: String(total), lang: language } });

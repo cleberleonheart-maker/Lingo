@@ -9,7 +9,7 @@ import { LANGUAGE_LIST, type LanguageId } from '@/constants/languages';
 export default function Result() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
-  const { correct = '0', total = '0', lang } = useLocalSearchParams<{ correct: string; total: string; lang?: string }>();
+  const { id: examId = '', correct = '0', total = '0', lang } = useLocalSearchParams<{ id?: string; correct: string; total: string; lang?: string }>();
   const language: LanguageId = LANGUAGE_LIST.some((l) => l.id === lang) ? (lang as LanguageId) : 'en';
 
   const got = Number(correct);
@@ -44,7 +44,10 @@ export default function Result() {
           <Text style={styles.primaryText}>Voltar ao mapa</Text>
         </Pressable>
         {!passed && (
-          <Pressable accessibilityRole="button" onPress={() => router.back()} style={styles.secondary}>
+          <Pressable
+            accessibilityRole="button"
+            onPress={() => router.replace({ pathname: '/exam/[id]', params: { id: examId } })}
+            style={styles.secondary}>
             <Text style={styles.secondaryText}>Tentar de novo</Text>
           </Pressable>
         )}

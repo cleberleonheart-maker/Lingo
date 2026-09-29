@@ -13,6 +13,8 @@ type Props = {
   language: LanguageId;
   exercises: Exercise[];
   onFinish: (score: { correct: number; total: number }) => void;
+  /** Botao de sair: abandona a licao sem conta-la como concluida. */
+  onExit: () => void;
 };
 
 /** Em `match`, o acerto é todos os pares ligados corretamente. */
@@ -24,7 +26,7 @@ function matches(exercise: Exercise, given: string, linked: Map<string, string> 
   return checkAnswer(exercise, given);
 }
 
-export function ExercisePlayer({ language, exercises, onFinish }: Props) {
+export function ExercisePlayer({ language, exercises, onFinish, onExit }: Props) {
   const insets = useSafeAreaInsets();
   const [index, setIndex] = useState(0);
   const [given, setGiven] = useState('');
@@ -125,7 +127,7 @@ export function ExercisePlayer({ language, exercises, onFinish }: Props) {
   return (
     <View style={[styles.root, { paddingTop: insets.top + 8, paddingBottom: insets.bottom + 12 }]}>
       <View style={styles.topBar}>
-        <Pressable accessibilityLabel="Sair" onPress={() => onFinish({ correct: correctCount, total })} style={styles.iconBtn}>
+        <Pressable accessibilityLabel="Sair" onPress={onExit} style={styles.iconBtn}>
           <Text style={styles.icon}>✕</Text>
         </Pressable>
         <View style={styles.track}>
