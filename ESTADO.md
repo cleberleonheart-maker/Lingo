@@ -22,10 +22,16 @@ esfera, adereço (emoji) e bochecha próprios:
 | it | turquesa | 🍕 |
 | ja | rosa → vinho | 🌸 |
 
-**Conteúdo (`src/constants/content.ts`)** — só inglês tem lição: 1 unidade,
-3 lições + 1 prova, 5 tipos de exercício (`choice`, `translate`, `fill`,
-`match`, `listen`). Os outros 5 idiomas têm o array vazio de propósito — a tela
-mostra "em breve" em vez de quebrar.
+**Conteúdo** — 6 idiomas com 1 unidade cada, 3 lições + 1 prova, 5 tipos de
+exercício (`choice`, `translate`, `fill`, `match`, `listen`). 198 exercícios no
+total. Inglês em `src/constants/content.ts`; os outros 5 em `content-es.ts`,
+`content-fr.ts`, `content-de.ts`, `content-it.ts` e `content-ja.ts`.
+
+**Lições sorteiam de um banco** — `pool` + `perSession`: as lições 1 e 3 de cada
+idioma sorteiam 10 exercícios de um banco de 10-14 em vez de repetir uma
+sequência fixa. O sorteio acontece na abertura da tela (`drawSession`), não
+dentro do `ExercisePlayer`, senão a ordem mudaria a cada re-render e o `index`
+pararia de bater.
 
 **Progresso (`src/lib/progress.ts`)** — AsyncStorage, com streak e
 `streakBest`. `touchStudy` só avança o streak se for o dia seguinte.
@@ -60,14 +66,67 @@ em checagem de tipo; só aparece quando alguém faz a lição e olha o resultado
 
 ## Pendências
 
-- **Lições dos outros 5 idiomas** — só o inglês tem conteúdo. es[],
-  fr[], de[], it[] e ja[] estão vazios de propósito (a tela mostra "em breve").
-- **A tela de "em breve" ainda não foi conferida** visualmente.
-- O exercício `match` (pareamento) ainda não foi testado por alguém.
-- Faltam coração, states `.playing`/`.sleep` e a recompensa daily do Duolingo.
+- Faltam coração, states `.playing`/`.sleep` e a recompensa diária do Duolingo.
+- A repetição espaçada (nível 3): exercício errado volta em 5 min, 1 dia, 3 dias.
+  O `pool` do nível 2 já é a base disso.
+- Lições 2 e as provas ainda são fixas (sem `pool`).
 - O `avatar.tsx` antigo (SVG) foi substituído; o `react-native-svg` continua
   instalado e sem uso.
+- O campo `to` do tipo `translate` não é usado no render.
 - `package-lock.json` é novo e nunca foi revisado.
+- Áudio do japonês depende de voz instalada no `expo-speech`; não confirmado em
+  hardware real.
+
+## Bugs de conteúdo achados rodando (2026-09-29, tarde)
+
+Todos introduzidos no mesmo dia. Os 3 primeiros nos 5 idiomas novos;
+os 4 últimos na navegação, que era compartilhada por todos. **Nenhum pegava no
+typecheck** — passavam com TS limpo. Só apareceram porque o app foi rodado.
+
+1. **55 exercícios de `translate` ao contrário** — o `from` estava escrito no
+   idioma alvo, então pedia "traduza para espanhol" em cima de `¡Hola!`.
+   Corrigido: o `from` é sempre português. No japonês o `from` continua em kana
+   de propósito (ler kana é o exercício essencial e não dá para digitar kana no
+   teclado), com o novo campo opcional `label` trocando o texto para
+   "leia em romaji".
+
+2. **21 exercícios de `choice` entregavam a resposta** — o enunciado estava
+   no idioma estrangeiro *e* continha a opção correta
+   (`¿Cómo se dice "buenos días"?` com a opção `buenos días`). Agora o
+   enunciado pergunta em português a partir do significado
+   (`Como você diz "bom dia" em espanhol?`).
+
+3. **2 `fill` impossíveis de acertar** — `answer: ''`. `checkAnswer` rejeita
+   entrada vazia, então nunca dava certo. Achados por script, não a olho.
+
+4. **Lição travada na última tela** — `router.back()` depende de existir uma
+   tela anterior na pilha. Aberta sem histórico (F5 na URL), o React
+   Navigation dispara "The action 'goBack' was not handled by any navigator" e
+   a lição ficava presa. Agora a saída é sempre explícita, `router.replace` para
+   o mapa com o idioma. Não sobrou nenhum `router.back()` no app.
+
+5. **Botão ✕ concluía a lição** — chamava `onFinish`, o mesmo callback do fim,
+   então sair depois do primeiro exercício marcava a lição como feita. Agora tem
+   `onExit` próprio, que só sai.
+
+6. **Idioma selecionado não sobrevivia ao F5** — o chip do mapa mudava só o
+   estado local, e a URL continuava `?lang=en`, então recarregar voltava para o
+   inglês. Agora o chip grava com `router.setParams`; a URL é a fonte da verdade
+   nas duas telas.
+
+7. **Lição reaproveitava o estado da anterior** — o `ExercisePlayer` guarda
+   `index`/`given`/`linked` em estado local e o React reaproveita a instância
+   entre `/lesson/en-u1-l2` e `/lesson/fr-u1-l2`, então a francesa abria no
+   índice que a inglesa deixou. Agora leva `key` por id de lição/prova.
+
+## Validador de conteúdo
+
+`/tmp/opencode/validate-content.cjs` (fora do repo, é ferramenta de trabalho).
+Compila os `content*.ts` e checa o que o typecheck não pega: opção correta
+dentro do próprio enunciado, `fill` com resposta vazia, `translate` com `from`
+do mesmo idioma da resposta, coluna de `match` repetida, banco menor que a
+sessão, ids duplicados, e varredura de caractere de outro alfabeto. As regras 1
+e 2 acima foram escritas a partir dos bugs que ele achou.
 
 ## Como rodar
 
