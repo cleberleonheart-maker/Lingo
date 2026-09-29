@@ -1,6 +1,6 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
-import { useRouter } from 'expo-router';
+import { useFocusEffect, useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { Avatar } from '@/components/avatar';
@@ -15,9 +15,20 @@ export default function Home() {
   const [language, setLanguage] = useState<LanguageId>('en');
   const [progress, setProgress] = useState<Progress | null>(null);
 
-  useEffect(() => {
-    loadProgress().then(setProgress);
-  }, []);
+  // `useFocusEffect` e nao `useEffect`: a licao salva o progresso no
+  // AsyncStorage e volta com `router.back()`, que NAO remonta esta tela. Com
+  // `useEffect` o mapa ficaria mostrando o estado velho para sempre.
+  useFocusEffect(
+    useCallback(() => {
+      let alive = true;
+      loadProgress().then((p) => {
+        if (alive) setProgress(p);
+      });
+      return () => {
+        alive = false;
+      };
+    }, [])
+  );
 
   const lang = LANGUAGES[language];
   const course = COURSES[language];
