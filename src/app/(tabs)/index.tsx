@@ -1,6 +1,6 @@
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
-import { useFocusEffect, useRouter } from 'expo-router';
+import { useFocusEffect, useLocalSearchParams, useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { Avatar } from '@/components/avatar';
@@ -12,8 +12,17 @@ import { isExamDone, isLessonDone, loadProgress, type Progress } from '@/lib/pro
 export default function Home() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
-  const [language, setLanguage] = useState<LanguageId>('en');
+  // A tela de Idiomas escolhe o idioma por parametro de URL; sem ler isso o
+  // mapa voltaria sempre para ingles e os outros cursos ficariam inacessiveis.
+  const { lang: wanted } = useLocalSearchParams<{ lang?: string }>();
+  const [language, setLanguage] = useState<LanguageId>(
+    LANGUAGE_LIST.some((l) => l.id === wanted) ? (wanted as LanguageId) : 'en'
+  );
   const [progress, setProgress] = useState<Progress | null>(null);
+
+  useEffect(() => {
+    if (wanted && LANGUAGE_LIST.some((l) => l.id === wanted)) setLanguage(wanted as LanguageId);
+  }, [wanted]);
 
   // `useFocusEffect` e nao `useEffect`: a licao salva o progresso no
   // AsyncStorage e volta com `router.back()`, que NAO remonta esta tela. Com

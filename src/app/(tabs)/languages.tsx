@@ -23,7 +23,7 @@ export default function Languages() {
           <Pressable
             accessibilityRole="button"
             key={lang.id}
-            onPress={() => router.push('/')}
+            onPress={() => router.push({ pathname: '/', params: { lang: lang.id } })}
             style={styles.row}>
             <Avatar blink={false} language={lang.id} size={64} />
             <View style={styles.rowText}>

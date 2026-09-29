@@ -20,7 +20,7 @@ export default function ExamScreen() {
         language={language}
         onFinish={({ correct, total }) => {
           void completeExam(exam.id).then(() => {
-            router.replace({ pathname: '/result', params: { id: exam.id, correct: String(correct), total: String(total) } });
+            router.replace({ pathname: '/result', params: { id: exam.id, correct: String(correct), total: String(total), lang: language } });
           });
         }}
       />

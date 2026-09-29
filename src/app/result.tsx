@@ -4,12 +4,13 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Animated, { FadeIn, ZoomIn } from 'react-native-reanimated';
 
 import { Avatar } from '@/components/avatar';
-import type { LanguageId } from '@/constants/languages';
+import { LANGUAGE_LIST, type LanguageId } from '@/constants/languages';
 
 export default function Result() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
-  const { correct = '0', total = '0' } = useLocalSearchParams<{ correct: string; total: string }>();
+  const { correct = '0', total = '0', lang } = useLocalSearchParams<{ correct: string; total: string; lang?: string }>();
+  const language: LanguageId = LANGUAGE_LIST.some((l) => l.id === lang) ? (lang as LanguageId) : 'en';
 
   const got = Number(correct);
   const max = Number(total);
@@ -23,7 +24,7 @@ export default function Result() {
         <Avatar
           asleep={!passed}
           blink={passed}
-          language={'en' as LanguageId}
+          language={language}
           size={140}
         />
       </Animated.View>
@@ -39,7 +40,7 @@ export default function Result() {
       </Animated.View>
 
       <View style={styles.actions}>
-        <Pressable accessibilityRole="button" onPress={() => router.replace('/')} style={styles.primary}>
+        <Pressable accessibilityRole="button" onPress={() => router.replace({ pathname: '/', params: { lang: language } })} style={styles.primary}>
           <Text style={styles.primaryText}>Voltar ao mapa</Text>
         </Pressable>
         {!passed && (
