@@ -17,6 +17,7 @@ export default function ExamScreen() {
     const goToMap = () => router.replace({ pathname: '/', params: { lang: language } });
     return (
       <ExercisePlayer
+        key={exam.id}
         exercises={exam.exercises}
         language={language}
         onExit={goToMap}

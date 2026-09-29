@@ -25,7 +25,11 @@ export default function LessonScreen() {
     const goToMap = () => router.replace({ pathname: '/', params: { lang: language } });
 
     return (
+      // `key` forca remontar ao trocar de licao. Sem isso o React reaproveita a
+      // mesma instancia do componente entre /lesson/en-u1-l2 e /lesson/fr-u1-l2 e
+      // o `index` da licao inglesa continua valendo na francesa.
       <ExercisePlayer
+        key={lesson.id}
         // Sorteado uma vez por abertura da tela: se fosse dentro do player, a
         // sequencia mudaria a cada re-render e o `index` deixaria de bater.
         exercises={drawSession(lesson)}

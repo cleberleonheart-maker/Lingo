@@ -66,7 +66,9 @@ export default function Home() {
             <Pressable
               accessibilityRole="button"
               key={item.id}
-              onPress={() => setLanguage(item.id)}
+              // Grava na URL, nao so no estado: se so no estado, um F5 ou um
+              // link direto volta para o ingles mesmo com o frances selecionado.
+              onPress={() => router.setParams({ lang: item.id })}
               style={[styles.langCard, active && styles.langCardOn]}>
               <Avatar blink={false} language={item.id} size={48} />
               <Text style={[styles.langName, active && styles.langNameOn]}>{item.name}</Text>
