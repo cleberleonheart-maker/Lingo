@@ -1,6 +1,7 @@
 # Lingo — estado em 2026-09-29
 
 Vertical slice estilo Duolingo, montada do zero sobre o template do Expo.
+**Rodando e validado** no Chromium (ver "Validado em runtime").
 
 ## O que existe
 
@@ -38,42 +39,58 @@ imediato (verde/vermelho + resposta certa), botão "Continuar" que só aparece
 depois de responder. `listen` fala sozinho ao entrar (via `expo-speech`).
 `match` é pareamento de verdade: toca na esquerda, depois na direita.
 
+## Validado em runtime (2026-09-29, no Chromebook)
+
+Rodou de ponta a ponta no Chromium: mapa renderiza, os 6 avatares aparecem
+com os adereços certos, o relógio mostra a hora e o fuso, a lição abre, os 5
+tipos de exercício respondem, o feedback imediato funciona, a prova roda e a
+tela de resultado mostra "Perfeito!", e o progresso persiste (bolinha vira ✓,
+streak sobe).
+
+### Bug encontrado rodando (não pegava no typecheck)
+
+O mapa carregava o progresso só no mount (`useEffect`). A lição gravava no
+AsyncStorage e voltava com `router.back()`, que **não remonta** a tela — então
+o mapa ficava com o estado velho para sempre: a lição terminava certa, mas a
+bolinha nunca virava ✓ e o streak não subia.
+
+Corrigido trocando por `useFocusEffect`, que revalida a cada ganho de foco.
+**O typecheck passava limpo com esse bug presente.** Erro de lógica não aparece
+em checagem de tipo; só aparece quando alguém faz a lição e olha o resultado.
+
 ## Pendências
 
-- **Nada foi testado em runtime.** `expo export` e `expo start` morrem os dois
-  sem mensagem de erro, sempre logo depois de "Starting Metro Bundler" /
-  "Waiting on http://localhost:8081", sem deixar porta em LISTEN e sem processo
-  Node vivo. Tentado em 2026-09-29:
-  - `expo export --platform web` — 3x, morre em ~9 min
-  - `expo start --web --port 8081` — 2x, morre logo após announce
-  - `EXPO_NO_DEVTOOLS=1` — o DevTools (Electron) falha como root, o Metro ainda
-    assim morre junto
-  - Com e sem `--clear`, com `--max-old-space-size=4096`
-  - 4ª tentativa em 2026-09-29 13:48, na porta 8082, com 2.0 GB livres
-
-  **A memória não é a causa.** A última tentativa morreu com 2 GB disponíveis,
-  e o processo some logo depois de "Starting Metro Bundler" — sem stack trace,
-  sem porta em LISTEN, sem processo Node vivo. Nenhuma das 4-Saharan deu pista
-  além disso. O DevTools (Electron) falha como root, mas desativá-lo não resolve
-  porque o Metro morre do mesmo jeito. Hipóteses restantes: incompatibilidade
-  do binário do Metro com este proot/aarch64, ou o watchdog de memória do
-  proot. **Não é bug do código** — nenhum erro de código apareceu em nenhum log.
-
-  **Isto não é bug do código:** o typecheck passa limpo e os três pacotes estão
-  instalados. Mas isso também não prova que o app abre — só prova que os tipos
-  batem. Precisa rodar `npx expo start` numa máquina folgada antes de confiar.
-
-  Antes de qualquer build, checar:
-  1. `free -m` (quer ~2 GB livres)
-  2. `npx tsc --noEmit` (erro de tipo sai aqui)
-  3. `ls node_modules/<pacote>` (instalação pode dar timeout e gravar pela
-     metade)
-  4. só então buildar — e se falhar, **não repetir igual**: ler o log
-- Os 5 idiomas além do inglês não têm conteúdo escrito.
-- Faltam coração, os states `.playing`/`.sleep` e a recompensa daily do Duolingo.
+- **Lições dos outros 5 idiomas** — só o inglês tem conteúdo. es[],
+  fr[], de[], it[] e ja[] estão vazios de propósito (a tela mostra "em breve").
+- **A tela de "em breve" ainda não foi conferida** visualmente.
+- O exercício `match` (pareamento) ainda não foi testado por alguém.
+- Faltam coração, states `.playing`/`.sleep` e a recompensa daily do Duolingo.
 - O `avatar.tsx` antigo (SVG) foi substituído; o `react-native-svg` continua
   instalado e sem uso.
-- `package-lock.json` nunca foi revisado (é novo, fora do `.gitignore`).
+- `package-lock.json` é novo e nunca foi revisado.
+
+## Como rodar
+
+No ambiente normal (fora do proot), o Metro funciona:
+
+```
+git clone https://github.com/cleberleonheart-maker/Lingo.git
+cd Lingo && npm install
+npx expo start --web
+```
+
+**No proot/aarch64 daqui o Metro não sobe** — morre logo após "Starting Metro
+Bundler", sem erro no log, sem porta, sem processo. Tentado 4x (2026-09-29),
+inclusive com 2 GB de memória livres, então memória não é a causa. Não é bug
+do código. Para testar, usar o Chromebook.
+
+Antes de qualquer build, checar:
+1. `free -m` (quer ~2 GB livres)
+2. `npx tsc --noEmit` (erro de tipo sai aqui)
+3. `ls node_modules/<pacote>` (a instalação pode dar timeout e gravar pela
+   metade — já aconteceu com `expo-linear-gradient` e
+   `react-native-safe-area-context`)
+4. só então buildar — e se falhar, **não repetir igual**: ler o log
 
 ## Bug já corrigido no caminho
 
