@@ -63,3 +63,21 @@ export const Spacing = {
 
 export const BottomTabInset = Platform.select({ ios: 50, android: 80 }) ?? 0;
 export const MaxContentWidth = 800;
+
+/** Paleta do app de estudo (fundo escuro fixo, independente do tema do sistema). */
+export const INK = {
+  bg: '#12101a',
+  card: '#1c1927',
+  cardAlt: '#241f33',
+  border: '#2c2740',
+  borderStrong: '#3a3350',
+  violet: '#7C5CFF',
+  text: '#EDE9FE',
+  white: '#ffffff',
+  muted: '#a79fb8',
+  dim: '#7c7590',
+  ok: '#3FB950',
+  okBg: '#14361f',
+  bad: '#F85149',
+  badBg: '#3a1620',
+} as const;
