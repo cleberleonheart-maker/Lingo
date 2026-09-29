@@ -1,7 +1,7 @@
 import { useLocalSearchParams, useRouter } from 'expo-router';
 
 import { ExercisePlayer } from '@/components/exercise-player';
-import { getLesson } from '@/constants/content';
+import { drawSession, getLesson } from '@/constants/content';
 import type { LanguageId } from '@/constants/languages';
 import { completeLesson } from '@/lib/progress';
 
@@ -16,7 +16,9 @@ export default function LessonScreen() {
     if (!lesson) continue;
     return (
       <ExercisePlayer
-        exercises={lesson.exercises}
+        // Sorteado uma vez por abertura da tela: se fosse dentro do player, a
+        // sequência mudaria a cada re-render e o `index` deixaria de bater.
+        exercises={drawSession(lesson)}
         language={language}
         onFinish={() => {
           void completeLesson(lesson.id).then(() => router.back());

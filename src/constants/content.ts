@@ -20,7 +20,29 @@ export type Lesson = {
   title: string;
   subtitle: string;
   exercises: Exercise[];
+  /**
+   * Banco maior de exercícios. Quando existe, a lição sorteia `perSession`
+   * em vez de usar `exercises` em ordem — aí refazer a mesma lição não repete
+   * a mesma sequência. `exercises` vira só a ordem canônica de primeira vez.
+   */
+  pool?: Exercise[];
+  perSession?: number;
 };
+
+export function drawSession(lesson: Lesson): Exercise[] {
+  if (!lesson.pool || lesson.pool.length === 0) return lesson.exercises;
+  const want = Math.min(lesson.perSession ?? 8, lesson.pool.length);
+  return shuffle(lesson.pool).slice(0, want);
+}
+
+function shuffle<T>(items: T[]): T[] {
+  const copy = [...items];
+  for (let i = copy.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [copy[i], copy[j]] = [copy[j], copy[i]];
+  }
+  return copy;
+}
 
 export type Unit = {
   id: string;
@@ -83,6 +105,126 @@ const EN: Course = {
               after: '!',
               answer: 'morning',
               accept: ['morning'],
+            },
+          ],
+          perSession: 10,
+          pool: [
+            {
+              kind: 'choice',
+              id: 'p1',
+              prompt: 'Como você diz "bom dia" em inglês?',
+              answer: 'b',
+              options: [
+                { id: 'a', text: 'good night' },
+                { id: 'b', text: 'good morning' },
+                { id: 'c', text: 'good evening' },
+                { id: 'd', text: 'goodbye' },
+              ],
+            },
+            {
+              kind: 'choice',
+              id: 'p2',
+              prompt: 'E "boa noite"?',
+              answer: 'a',
+              options: [
+                { id: 'a', text: 'good night' },
+                { id: 'b', text: 'good morning' },
+                { id: 'c', text: 'goodbye' },
+                { id: 'd', text: 'hello' },
+              ],
+            },
+            {
+              kind: 'choice',
+              id: 'p3',
+              prompt: 'E "boa tarde"?',
+              answer: 'c',
+              options: [
+                { id: 'a', text: 'good night' },
+                { id: 'b', text: 'good morning' },
+                { id: 'c', text: 'good afternoon' },
+                { id: 'd', text: 'thank you' },
+              ],
+            },
+            {
+              kind: 'translate',
+              id: 'p4',
+              from: 'Olá!',
+              to: 'inglês',
+              accept: ['hello', 'hi', 'hey'],
+            },
+            {
+              kind: 'translate',
+              id: 'p5',
+              from: 'Bom dia!',
+              to: 'inglês',
+              accept: ['good morning', 'goodmorning'],
+            },
+            {
+              kind: 'translate',
+              id: 'p6',
+              from: 'Boa noite!',
+              to: 'inglês',
+              accept: ['good night', 'goodnight'],
+            },
+            {
+              kind: 'translate',
+              id: 'p7',
+              from: 'Até logo!',
+              to: 'inglês',
+              accept: ['goodbye', 'bye', 'see you', 'seeyou', 'good bye'],
+            },
+            {
+              kind: 'translate',
+              id: 'p8',
+              from: 'Até amanhã!',
+              to: 'inglês',
+              accept: ['see you tomorrow', 'seeyoutomorrow', 'see you tomorrow!'],
+            },
+            {
+              kind: 'fill',
+              id: 'p9',
+              before: 'Good ',
+              after: '!',
+              answer: 'morning',
+              accept: ['morning'],
+            },
+            {
+              kind: 'fill',
+              id: 'p10',
+              before: 'Good ',
+              after: '.',
+              answer: 'night',
+              accept: ['night'],
+            },
+            {
+              kind: 'fill',
+              id: 'p11',
+              before: 'See you ',
+              after: '!',
+              answer: 'later',
+              accept: ['later'],
+            },
+            {
+              kind: 'listen',
+              id: 'p12',
+              speak: 'Good evening',
+              accept: ['good evening', 'goodevening'],
+            },
+            {
+              kind: 'listen',
+              id: 'p13',
+              speak: 'See you tomorrow',
+              accept: ['see you tomorrow', 'seeyoutomorrow', 'see you tommorow'],
+            },
+            {
+              kind: 'match',
+              id: 'p14',
+              pairs: [
+                { left: 'Hello', right: 'Olá' },
+                { left: 'Goodbye', right: 'Adeus' },
+                { left: 'Thank you', right: 'Obrigado' },
+                { left: 'Please', right: 'Por favor' },
+              ],
             },
           ],
         },
