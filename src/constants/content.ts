@@ -10,7 +10,21 @@ export type Choice = { id: string; text: string };
 
 export type Exercise =
   /** Traduzir escrevendo. */
-  | { kind: 'translate'; id: string; from: string; to: string; accept: string[]; hint?: string }
+  /**
+   * Traduzir. `from` e sempre na lingua de origem (portugues) e as respostas em
+   * `accept` no idioma estudado. Em japones o `from` fica em kana e a resposta em
+   * romaji (nao da para digitar kana no teclado), entao `label` troca o texto
+   * de "traduza para" para "leia em romaji".
+   */
+  | {
+      kind: 'translate';
+      id: string;
+      from: string;
+      to: string;
+      accept: string[];
+      label?: string;
+      hint?: string;
+    }
   /** Escolha múltipla. */
   | { kind: 'choice'; id: string; prompt: string; answer: string; options: Choice[] }
   /**preencher a lacuna. */

@@ -275,7 +275,9 @@ function renderPrompt(exercise: Exercise, languageName: string, onSpeak: () => v
     case 'translate':
       return (
         <View style={styles.promptBox}>
-          <Text style={styles.promptLabel}>traduza para {languageName.toLowerCase()}</Text>
+          <Text style={styles.promptLabel}>
+            {exercise.label ?? `traduza para ${languageName.toLowerCase()}`}
+          </Text>
           <Text style={styles.promptBig}>{exercise.from}</Text>
           {exercise.hint && <Text style={styles.promptHint}>{exercise.hint}</Text>}
         </View>
