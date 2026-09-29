@@ -1,3 +1,8 @@
+import { DE } from '@/constants/content-de';
+import { ES } from '@/constants/content-es';
+import { FR } from '@/constants/content-fr';
+import { IT } from '@/constants/content-it';
+import { JA } from '@/constants/content-ja';
 import type { LanguageId } from '@/constants/languages';
 
 /** Um item de escolha múltipla. */
@@ -367,11 +372,11 @@ const EN: Course = {
 
 export const COURSES: Record<LanguageId, Course> = {
   en: EN,
-  es: { language: 'es', from: 'pt', units: [] },
-  fr: { language: 'fr', from: 'pt', units: [] },
-  de: { language: 'de', from: 'pt', units: [] },
-  it: { language: 'it', from: 'pt', units: [] },
-  ja: { language: 'ja', from: 'pt', units: [] },
+  es: { language: 'es', from: 'pt', units: [ES] },
+  fr: { language: 'fr', from: 'pt', units: [FR] },
+  de: { language: 'de', from: 'pt', units: [DE] },
+  it: { language: 'it', from: 'pt', units: [IT] },
+  ja: { language: 'ja', from: 'pt', units: [JA] },
 };
 
 export function getLesson(language: LanguageId, lessonId: string) {

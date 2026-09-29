@@ -1,0 +1,110 @@
+import type { Unit } from './content';
+
+export const ES: Unit = {
+  id: 'es-u1',
+  title: 'Primeros contactos',
+  description: 'Saludar, presentarse y decir de dónde eres.',
+  lessons: [
+    {
+      id: 'es-u1-l1',
+      title: 'Saludos',
+      subtitle: 'hola, buenos días',
+      perSession: 10,
+      exercises: [
+        { kind: 'choice', id: 'e1', prompt: '¿Cómo se dice "buenos días"?', answer: 'b', options: [{ id: 'a', text: 'buenas noches' }, { id: 'b', text: 'buenos días' }, { id: 'c', text: 'adiós' }, { id: 'd', text: 'gracias' }] },
+        { kind: 'translate', id: 'e2', from: '¡Hola!', to: 'espanhol', accept: ['hola'] },
+        { kind: 'listen', id: 'e3', speak: 'Buenas noches', accept: ['buenas noches'] },
+        { kind: 'fill', id: 'e4', before: 'Buenos ', after: '!', answer: 'días', accept: ['días', 'dias'] },
+      ],
+      pool: [
+        { kind: 'choice', id: 'p1', prompt: '¿Cómo se dice "buenos días"?', answer: 'b', options: [{ id: 'a', text: 'buenas noches' }, { id: 'b', text: 'buenos días' }, { id: 'c', text: 'adiós' }, { id: 'd', text: 'gracias' }] },
+        { kind: 'choice', id: 'p2', prompt: '¿Y "buenas noches"?', answer: 'a', options: [{ id: 'a', text: 'buenas noches' }, { id: 'b', text: 'buenos días' }, { id: 'c', text: 'hasta luego' }, { id: 'd', text: 'por favor' }] },
+        { kind: 'choice', id: 'p3', prompt: '¿Y "hasta luego"?', answer: 'c', options: [{ id: 'a', text: 'buenos días' }, { id: 'b', text: 'buenas noches' }, { id: 'c', text: 'hasta luego' }, { id: 'd', text: 'muchas gracias' }] },
+        { kind: 'translate', id: 'p4', from: '¡Hola!', to: 'espanhol', accept: ['hola'] },
+        { kind: 'translate', id: 'p5', from: 'Buenos días.', to: 'espanhol', accept: ['buenos días'] },
+        { kind: 'translate', id: 'p6', from: 'Buenas noches.', to: 'espanhol', accept: ['buenas noches'] },
+        { kind: 'translate', id: 'p7', from: 'Hasta luego.', to: 'espanhol', accept: ['hasta luego'] },
+        { kind: 'translate', id: 'p8', from: 'Adiós.', to: 'espanhol', accept: ['adiós', 'adios', 'chao'] },
+        { kind: 'fill', id: 'p9', before: 'Buenos ', after: '!', answer: 'días', accept: ['días', 'dias'] },
+        { kind: 'fill', id: 'p10', before: 'Buenas ', after: '.', answer: 'noches', accept: ['noches'] },
+        { kind: 'listen', id: 'p11', speak: 'Buenos días', accept: ['buenos días'] },
+        { kind: 'listen', id: 'p12', speak: 'Hasta luego', accept: ['hasta luego'] },
+        {
+          kind: 'match',
+          id: 'p13',
+          pairs: [
+            { left: 'Hola', right: 'Olá' },
+            { left: 'Adiós', right: 'Adeus' },
+            { left: 'Gracias', right: 'Obrigado' },
+            { left: 'Por favor', right: 'Se favor' },
+          ],
+        },
+      ],
+    },
+    {
+      id: 'es-u1-l2',
+      title: 'Me llamo',
+      subtitle: 'presentarse',
+      exercises: [
+        {
+          kind: 'match',
+          id: 'e1',
+          pairs: [
+            { left: 'Hola', right: 'Olá' },
+            { left: 'Me llamo…', right: 'Meu nome é…' },
+            { left: '¿Cómo te llamas?', right: 'Qual é o seu nome?' },
+            { left: 'Gracias', right: 'Obrigado' },
+          ],
+        },
+        { kind: 'translate', id: 'e2', from: 'Me llamo Ana.', to: 'espanhol', accept: ['me llamo ana'] },
+        { kind: 'fill', id: 'e3', before: 'Me ', after: ' Ana.', answer: 'llamo', accept: ['llamo'] },
+        { kind: 'choice', id: 'e4', prompt: 'Qual dos dois completa "___ Ana"?', answer: 'b', options: [{ id: 'a', text: 'Soy' }, { id: 'b', text: 'Me llamo' }, { id: 'c', text: 'Tengo' }] },
+        { kind: 'translate', id: 'e5', from: '¡Mucho gusto!', to: 'espanhol', accept: ['mucho gusto'] },
+        { kind: 'choice', id: 'e6', prompt: '¿Cómo se dice "mucho gusto"?', answer: 'a', options: [{ id: 'a', text: 'mucho gusto' }, { id: 'b', text: 'buenos días' }, { id: 'c', text: 'adiós' }] },
+      ],
+    },
+    {
+      id: 'es-u1-l3',
+      title: '¿De dónde eres?',
+      subtitle: 'país e idioma',
+      perSession: 10,
+      exercises: [
+        { kind: 'fill', id: 'e1', before: 'Soy ', after: ' Brasil.', answer: 'de', accept: ['de'] },
+        { kind: 'choice', id: 'e2', prompt: '¿"Soy de Brasil" quiere decir…?', answer: 'b', options: [{ id: 'a', text: 'Soy Ana' }, { id: 'b', text: 'Vengo de Brasil' }, { id: 'c', text: 'Vivo en Brasil' }] },
+        { kind: 'listen', id: 'e3', speak: 'Soy de Brasil', accept: ['soy de brasil'] },
+      ],
+      pool: [
+        { kind: 'fill', id: 'p1', before: 'Soy ', after: ' Brasil.', answer: 'de', accept: ['de'] },
+        { kind: 'fill', id: 'p2', before: 'Soy de ', after: '.', answer: 'Brasil', accept: ['brasil'] },
+        { kind: 'choice', id: 'p3', prompt: '¿"Soy de Brasil" quiere decir…?', answer: 'b', options: [{ id: 'a', text: 'Soy Ana' }, { id: 'b', text: 'Vengo de Brasil' }, { id: 'c', text: 'Vivo en Brasil' }] },
+        { kind: 'choice', id: 'p4', prompt: '¿Cómo se pregunta "de dónde eres"?', answer: 'a', options: [{ id: 'a', text: '¿De dónde eres?' }, { id: 'b', text: '¿Cómo te llamas?' }, { id: 'c', text: '¿Dónde está?' }] },
+        { kind: 'choice', id: 'p5', prompt: '"Hablo español" significa…', answer: 'c', options: [{ id: 'a', text: 'Sou espanhol' }, { id: 'b', text: 'Estou na Espanha' }, { id: 'c', text: 'Falo espanhol' }] },
+        { kind: 'translate', id: 'p6', from: 'Soy de Brasil.', to: 'espanhol', accept: ['soy de brasil'] },
+        { kind: 'translate', id: 'p7', from: 'Soy de España.', to: 'espanhol', accept: ['soy de españa', 'soy de espana'] },
+        { kind: 'translate', id: 'p8', from: 'Hablo español.', to: 'espanhol', accept: ['hablo español', 'hablo espanol'] },
+        { kind: 'listen', id: 'p9', speak: 'Soy de Brasil', accept: ['soy de brasil'] },
+        { kind: 'listen', id: 'p10', speak: 'Soy de España', accept: ['soy de españa', 'soy de espana'] },
+        {
+          kind: 'match',
+          id: 'p11',
+          pairs: [
+            { left: 'de', right: 'de' },
+            { left: 'dónde', right: 'onde' },
+            { left: 'eres', right: 'você é' },
+          ],
+        },
+      ],
+    },
+  ],
+  exam: {
+    id: 'es-u1-exam',
+    title: 'Examen de la unidad 1',
+    exercises: [
+      { kind: 'choice', id: 'q1', prompt: '"Buenas noches" significa…', answer: 'a', options: [{ id: 'a', text: 'boa noite' }, { id: 'b', text: 'bom dia' }, { id: 'c', text: 'adeus' }] },
+      { kind: 'translate', id: 'q2', from: 'Me llamo Pedro.', to: 'espanhol', accept: ['me llamo pedro'] },
+      { kind: 'fill', id: 'q3', before: 'Mucho ', after: ' en conocerte.', answer: 'gusto', accept: ['gusto'] },
+      { kind: 'choice', id: 'q4', prompt: '¿Cómo respondes a "¿Cómo estás?"', answer: 'b', options: [{ id: 'a', text: 'Me llamo Ana' }, { id: 'b', text: 'Estoy bien, gracias' }, { id: 'c', text: 'Soy de Brasil' }] },
+      { kind: 'translate', id: 'q5', from: '¡Hasta luego!', to: 'espanhol', accept: ['hasta luego', 'adiós', 'adios'] },
+    ],
+  },
+};
