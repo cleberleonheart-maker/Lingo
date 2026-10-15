@@ -146,6 +146,23 @@ Também removido um `accept` duplicado (`['burajiru', 'burajiru']`) em `ja-u1-l3
 
 O validador passou a reportar **0 problemas** nos 168 exercícios.
 
+## Varredura dos 6 idiomas (2026-10-15)
+
+Revisão de todos os idiomas além do que o validador já pega.
+
+- **"Se favor"** aparecia como tradução de "por favor" no par do `match` de
+  `es-u1-l1`, `fr-u1-l1`, `de-u1-l1` e `it-u1-l1` — o inglês já estava certo
+  (`Please → Por favor`). "Se favor" não existe em pt-BR: é o "se" do
+  espanhol/italiano vazando. Trocado por "Por favor".
+- Em `it-u1-l1` `p3` o mesmo erro estava no enunciado: `E "se favor"?` virou
+  `E "por favor"?`.
+- **`fr-u1-l1` estava inconsistente com "boa tarde"**: `p2` respondia `bonne
+  soirée` e `p5` traduzia para `bonsoir`. Alinhado — `p2` agora responde
+  `bonsoir` (o par `Bonne soirée` continua existindo no `fill` `p10`).
+
+O validador ganhou uma regra nova (palavra de outro idioma no lado em
+português) e segue reportando **0 problemas**.
+
 ## Validador de conteúdo
 
 `/tmp/opencode/validate-content.cjs` (fora do repo, é ferramenta de trabalho).

@@ -19,7 +19,7 @@ export const IT: Unit = {
       pool: [
         { kind: 'choice', id: 'p1', prompt: 'Como você diz "boa noite" em italiano?', answer: 'c', options: [{ id: 'a', text: 'buongiorno' }, { id: 'b', text: 'buonasera' }, { id: 'c', text: 'buonanotte' }, { id: 'd', text: 'arrivederci' }] },
         { kind: 'choice', id: 'p2', prompt: 'E "adeus"?', answer: 'a', options: [{ id: 'a', text: 'arrivederci' }, { id: 'b', text: 'buongiorno' }, { id: 'c', text: 'per favore' }, { id: 'd', text: 'molte grazie' }] },
-        { kind: 'choice', id: 'p3', prompt: 'E "se favor"?', answer: 'b', options: [{ id: 'a', text: 'grazie' }, { id: 'b', text: 'per favore' }, { id: 'c', text: 'arrivederci' }, { id: 'd', text: 'buonanotte' }] },
+        { kind: 'choice', id: 'p3', prompt: 'E "por favor"?', answer: 'b', options: [{ id: 'a', text: 'grazie' }, { id: 'b', text: 'per favore' }, { id: 'c', text: 'arrivederci' }, { id: 'd', text: 'buonanotte' }] },
         { kind: 'translate', id: 'p4', from: 'Oi!', to: 'italiano', accept: ['ciao'] },
         { kind: 'translate', id: 'p5', from: 'Bom dia.', to: 'italiano', accept: ['buongiorno'] },
         { kind: 'translate', id: 'p6', from: 'Boa noite.', to: 'italiano', accept: ['buonanotte'] },
@@ -36,7 +36,7 @@ export const IT: Unit = {
             { left: 'Ciao', right: 'Olá' },
             { left: 'Arrivederci', right: 'Adeus' },
             { left: 'Grazie', right: 'Obrigado' },
-            { left: 'Per favore', right: 'Se favor' },
+            { left: 'Per favore', right: 'Por favor' },
           ],
         },
       ],

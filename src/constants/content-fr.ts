@@ -18,7 +18,7 @@ export const FR: Unit = {
       ],
       pool: [
         { kind: 'choice', id: 'p1', prompt: 'Como você diz "boa noite" em francês?', answer: 'c', options: [{ id: 'a', text: 'bonjour' }, { id: 'b', text: 'bonne soirée' }, { id: 'c', text: 'bonne nuit' }, { id: 'd', text: 'adieu' }] },
-        { kind: 'choice', id: 'p2', prompt: 'E "boa tarde"?', answer: 'b', options: [{ id: 'a', text: 'bonne nuit' }, { id: 'b', text: 'bonne soirée' }, { id: 'c', text: 'bonjour' }, { id: 'd', text: 'merci' }] },
+        { kind: 'choice', id: 'p2', prompt: 'E "boa tarde"?', answer: 'b', options: [{ id: 'a', text: 'bonne nuit' }, { id: 'b', text: 'bonsoir' }, { id: 'c', text: 'bonjour' }, { id: 'd', text: 'merci' }] },
         { kind: 'choice', id: 'p3', prompt: 'E "adeus"?', answer: 'a', options: [{ id: 'a', text: 'au revoir' }, { id: 'b', text: 'bonsoir' }, { id: 'c', text: 'merci' }, { id: 'd', text: "s'il vous plaît" }] },
         { kind: 'translate', id: 'p4', from: 'Bom dia.', to: 'francês', accept: ['bonjour'] },
         { kind: 'translate', id: 'p5', from: 'Boa tarde.', to: 'francês', accept: ['bonsoir'] },
@@ -36,7 +36,7 @@ export const FR: Unit = {
             { left: 'Bonjour', right: 'Olá' },
             { left: 'Au revoir', right: 'Adeus' },
             { left: 'Merci', right: 'Obrigado' },
-            { left: "S'il vous plaît", right: 'Se favor' },
+            { left: "S'il vous plaît", right: 'Por favor' },
           ],
         },
       ],

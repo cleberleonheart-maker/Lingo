@@ -36,7 +36,7 @@ export const DE: Unit = {
             { left: 'Hallo', right: 'Olá' },
             { left: 'Tschüss', right: 'Tchau' },
             { left: 'Danke', right: 'Obrigado' },
-            { left: 'Bitte', right: 'Se favor' },
+            { left: 'Bitte', right: 'Por favor' },
           ],
         },
       ],
