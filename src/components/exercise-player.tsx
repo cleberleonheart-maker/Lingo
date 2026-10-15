@@ -4,7 +4,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as Speech from 'expo-speech';
 import Animated, { FadeIn } from 'react-native-reanimated';
 
-import { checkAnswer, normalize, type Exercise } from '@/constants/content';
+import { checkAnswer, shuffle, type Exercise } from '@/constants/content';
 import { LANGUAGES, type LanguageId } from '@/constants/languages';
 
 import { Avatar } from './avatar';
@@ -15,6 +15,8 @@ type Props = {
   onFinish: (score: { correct: number; total: number }) => void;
   /** Botao de sair: abandona a licao sem conta-la como concluida. */
   onExit: () => void;
+  /** Resultado de cada exercício, para a repetição espaçada. */
+  onResult?: (exerciseId: string, correct: boolean) => void;
 };
 
 /** Em `match`, o acerto é todos os pares ligados corretamente. */
@@ -26,7 +28,10 @@ function matches(exercise: Exercise, given: string, linked: Map<string, string> 
   return checkAnswer(exercise, given);
 }
 
-export function ExercisePlayer({ language, exercises, onFinish, onExit }: Props) {
+/** Vidas por sessão. Errar desconta; zerar encerra a lição sem concluir. */
+const MAX_HEARTS = 3;
+
+export function ExercisePlayer({ language, exercises, onFinish, onExit, onResult }: Props) {
   const insets = useSafeAreaInsets();
   const [index, setIndex] = useState(0);
   const [given, setGiven] = useState('');
@@ -35,6 +40,8 @@ export function ExercisePlayer({ language, exercises, onFinish, onExit }: Props)
   const [correctCount, setCorrectCount] = useState(0);
   const [matchSel, setMatchSel] = useState<string | null>(null);
   const [linked, setLinked] = useState<Map<string, string>>(new Map());
+  const [hearts, setHearts] = useState(MAX_HEARTS);
+  const [dead, setDead] = useState(false);
 
   const exercise = exercises[index];
   const lang = LANGUAGES[language];
@@ -44,17 +51,10 @@ export function ExercisePlayer({ language, exercises, onFinish, onExit }: Props)
   // A coluna da direita vai embaralhada, senão a resposta fica óbvia.
   const shuffledRights = useMemo(() => {
     if (exercise.kind !== 'match') return [];
-    return [...exercise.pairs]
-      .map((p) => p.right)
-      .sort((a, b) => (a < b ? 1 : a > b ? -1 : 0));
+    return shuffle(exercise.pairs.map((p) => p.right));
   }, [exercise]);
 
   const pairs = exercise.kind === 'match' ? exercise.pairs : [];
-
-  function speakNow() {
-    Speech.stop();
-    Speech.speak(textToSpeak(exercise), { language, rate: 0.85 });
-  }
 
   // O exercício de ouvir precisa falar sozinho ao entrar.
   useEffect(() => {
@@ -77,6 +77,12 @@ export function ExercisePlayer({ language, exercises, onFinish, onExit }: Props)
     setLinked(new Map());
   }
 
+  function loseHeart() {
+    const left = hearts - 1;
+    setHearts(Math.max(0, left));
+    if (left <= 0) setDead(true);
+  }
+
   function advance(wasCorrect: boolean) {
     if (wasCorrect) setCorrectCount((c) => c + 1);
     if (index + 1 >= total) {
@@ -88,22 +94,26 @@ export function ExercisePlayer({ language, exercises, onFinish, onExit }: Props)
   }
 
   function submit(raw?: string) {
-    if (done) return;
+    if (done || dead) return;
     const value = raw ?? picked ?? given;
     if (exercise.kind === 'match') {
       const ok = matches(exercise, '', linked);
       setDone(true);
+      onResult?.(exercise.id, ok);
       if (ok) Speech.stop();
+      else loseHeart();
       return;
     }
     if (!value) return;
     const ok = matches(exercise, value, null);
     setDone(true);
+    onResult?.(exercise.id, ok);
     if (ok) Speech.stop();
+    else loseHeart();
   }
 
   function tapMatch(side: 'left' | 'right', value: string) {
-    if (done) return;
+    if (done || dead) return;
     if (side === 'left') {
       setMatchSel(value);
       return;
@@ -117,7 +127,9 @@ export function ExercisePlayer({ language, exercises, onFinish, onExit }: Props)
     if (next.size === pairs.length) {
       const ok = pairs.every((p) => next.get(p.left) === p.right);
       setDone(true);
+      onResult?.(exercise.id, ok);
       if (ok) Speech.stop();
+      else loseHeart();
     }
   }
 
@@ -133,6 +145,7 @@ export function ExercisePlayer({ language, exercises, onFinish, onExit }: Props)
         <View style={styles.track}>
           <View style={[styles.fill, { width: `${Math.min(100, progress * 100)}%` }]} />
         </View>
+        <Text style={styles.hearts}>{`❤️ ${hearts}`}</Text>
         <Avatar blink={!answered} language={language} size={34} />
       </View>
 
@@ -231,18 +244,25 @@ export function ExercisePlayer({ language, exercises, onFinish, onExit }: Props)
       </Animated.View>
 
       <Animated.View entering={FadeIn.duration(140)} style={styles.footer}>
-        {answered && (
-          <View style={[styles.banner, wasRight ? styles.bannerOk : styles.bannerBad]}>
-            <Text style={styles.bannerTitle}>{wasRight ? 'Isso aí!' : 'Quase!'}</Text>
-            {!wasRight && <Text style={styles.bannerBody}>{showAnswer(exercise)}</Text>}
+        {dead ? (
+          <View style={[styles.banner, styles.bannerBad]}>
+            <Text style={styles.bannerTitle}>Acabaram as vidas 💔</Text>
+            <Text style={styles.bannerBody}>Volte mais tarde e refaça esta lição.</Text>
           </View>
+        ) : (
+          answered && (
+            <View style={[styles.banner, wasRight ? styles.bannerOk : styles.bannerBad]}>
+              <Text style={styles.bannerTitle}>{wasRight ? 'Isso aí!' : 'Quase!'}</Text>
+              {!wasRight && <Text style={styles.bannerBody}>{showAnswer(exercise)}</Text>}
+            </View>
+          )
         )}
         <Pressable
           accessibilityRole="button"
-          disabled={!answered}
-          onPress={() => advance(wasRight)}
-          style={[styles.cta, !answered && styles.ctaOff]}>
-          <Text style={styles.ctaText}>{answered ? 'Continuar' : 'Verificar'}</Text>
+          disabled={!answered && !dead}
+          onPress={() => (dead ? onExit() : advance(wasRight))}
+          style={[styles.cta, !answered && !dead && styles.ctaOff]}>
+          <Text style={styles.ctaText}>{dead ? 'Voltar ao mapa' : answered ? 'Continuar' : 'Verificar'}</Text>
         </Pressable>
       </Animated.View>
     </View>
@@ -328,6 +348,7 @@ const styles = StyleSheet.create({
   icon: { color: '#6f6880', fontSize: 18 },
   track: { backgroundColor: '#241f33', borderRadius: 99, flex: 1, height: 12, overflow: 'hidden' },
   fill: { backgroundColor: '#7C5CFF', borderRadius: 99, height: 12 },
+  hearts: { color: '#fff', fontSize: 15, fontWeight: '700' },
   body: { flex: 1, justifyContent: 'center' },
   promptBox: { alignItems: 'center', gap: 12 },
   prompt: { color: '#EDE9FE', fontSize: 24, fontWeight: '700', lineHeight: 32 },

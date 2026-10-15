@@ -4,7 +4,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { Avatar } from '@/components/avatar';
 import { COURSES } from '@/constants/content';
-import { LANGUAGES, LANGUAGE_LIST } from '@/constants/languages';
+import { LANGUAGE_LIST } from '@/constants/languages';
 
 export default function Languages() {
   const router = useRouter();

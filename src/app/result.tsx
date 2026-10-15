@@ -9,7 +9,7 @@ import { LANGUAGE_LIST, type LanguageId } from '@/constants/languages';
 export default function Result() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
-  const { id: examId = '', correct = '0', total = '0', lang } = useLocalSearchParams<{ id?: string; correct: string; total: string; lang?: string }>();
+  const { id: examId = '', correct = '0', total = '0', lang, xp = '0' } = useLocalSearchParams<{ id?: string; correct: string; total: string; lang?: string; xp?: string }>();
   const language: LanguageId = LANGUAGE_LIST.some((l) => l.id === lang) ? (lang as LanguageId) : 'en';
 
   const got = Number(correct);
@@ -36,6 +36,7 @@ export default function Result() {
         <Text style={styles.sub}>
           {got} de {max} · {Math.round(pct * 100)}%
         </Text>
+        {Number(xp) > 0 && <Text style={styles.xpChip}>⭐ +{xp} XP</Text>}
         {!passed && <Text style={styles.hint}>Refaça as lições da unidade e tente de novo.</Text>}
       </Animated.View>
 
@@ -62,6 +63,7 @@ const styles = StyleSheet.create({
   text: { alignItems: 'center', gap: 6 },
   title: { color: '#fff', fontSize: 30, fontWeight: '800' },
   sub: { color: '#a79fb8', fontSize: 17 },
+  xpChip: { color: '#FFD166', fontSize: 16, fontWeight: '700', marginTop: 4 },
   hint: { color: '#7c7590', fontSize: 14, marginTop: 6, textAlign: 'center' },
   actions: { gap: 10, marginTop: 'auto' },
   primary: { backgroundColor: '#7C5CFF', borderRadius: 16, padding: 17 },

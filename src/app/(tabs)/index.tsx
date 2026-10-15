@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useFocusEffect, useLocalSearchParams, useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -7,7 +7,7 @@ import { Avatar } from '@/components/avatar';
 import { LocalClock } from '@/components/local-clock';
 import { COURSES } from '@/constants/content';
 import { LANGUAGES, LANGUAGE_LIST, type LanguageId } from '@/constants/languages';
-import { isExamDone, isLessonDone, loadProgress, type Progress } from '@/lib/progress';
+import { emptyProgress, isExamDone, isLessonDone, loadProgress, type Progress } from '@/lib/progress';
 
 export default function Home() {
   const router = useRouter();
@@ -15,14 +15,10 @@ export default function Home() {
   // A tela de Idiomas escolhe o idioma por parametro de URL; sem ler isso o
   // mapa voltaria sempre para ingles e os outros cursos ficariam inacessiveis.
   const { lang: wanted } = useLocalSearchParams<{ lang?: string }>();
-  const [language, setLanguage] = useState<LanguageId>(
-    LANGUAGE_LIST.some((l) => l.id === wanted) ? (wanted as LanguageId) : 'en'
-  );
+  const language: LanguageId = LANGUAGE_LIST.some((l) => l.id === wanted)
+    ? (wanted as LanguageId)
+    : 'en';
   const [progress, setProgress] = useState<Progress | null>(null);
-
-  useEffect(() => {
-    if (wanted && LANGUAGE_LIST.some((l) => l.id === wanted)) setLanguage(wanted as LanguageId);
-  }, [wanted]);
 
   // `useFocusEffect` e nao `useEffect`: a licao salva o progresso no
   // AsyncStorage e volta com `router.back()`, que NAO remonta esta tela. Com
@@ -41,6 +37,7 @@ export default function Home() {
 
   const lang = LANGUAGES[language];
   const course = COURSES[language];
+  const p = progress ?? emptyProgress();
 
   return (
     <ScrollView
@@ -50,12 +47,27 @@ export default function Home() {
         <View style={styles.heroText}>
           <Text style={styles.hello}>Lingo</Text>
           <Text style={styles.streak}>
-            {progress?.streak ? `🔥 ${progress.streak} dia${progress.streak > 1 ? 's' : ''}` : '🔥 comece hoje'}
+            {p.streak ? `🔥 ${p.streak} dia${p.streak > 1 ? 's' : ''}` : '🔥 comece hoje'}
           </Text>
+          <Text style={styles.xp}>⭐ {p.xp} XP</Text>
         </View>
         <View style={styles.heroRight}>
           <LocalClock style={styles.clock} />
-          <Avatar asleep={!progress?.streak} blink language={language} size={72} />
+          <Avatar asleep={!p.streak} blink language={language} size={72} />
+        </View>
+      </View>
+
+      <View style={styles.goal}>
+        <View style={styles.goalHead}>
+          <Text style={styles.goalLabel}>Meta de hoje</Text>
+          <Text style={styles.goalValue}>
+            {Math.min(p.todayXp, p.dailyGoal)}/{p.dailyGoal} XP
+          </Text>
+        </View>
+        <View style={styles.goalTrack}>
+          <View
+            style={[styles.goalFill, { width: `${Math.min(100, (p.todayXp / (p.dailyGoal || 1)) * 100)}%` }]}
+          />
         </View>
       </View>
 
@@ -86,14 +98,14 @@ export default function Home() {
         </View>
       ) : (
         course.units.map((unit) => {
-          const allDone = unit.lessons.every((l) => isLessonDone(progress ?? { lessons: [], exams: [], lastStudied: null, streak: 0, streakBest: 0 }, l.id));
+          const allDone = unit.lessons.every((l) => isLessonDone(p, l.id));
           return (
             <View key={unit.id} style={styles.unit}>
               <Text style={styles.unitTitle}>{unit.title}</Text>
               <Text style={styles.unitDesc}>{unit.description}</Text>
 
               {unit.lessons.map((lesson, i) => {
-                const done = isLessonDone(progress ?? { lessons: [], exams: [], lastStudied: null, streak: 0, streakBest: 0 }, lesson.id);
+                const done = isLessonDone(p, lesson.id);
                 return (
                   <Pressable
                     accessibilityRole="button"
@@ -118,7 +130,7 @@ export default function Home() {
                 onPress={() => router.push(`/exam/${unit.exam.id}`)}
                 style={[styles.exam, allDone && styles.examOn]}>
                 <Text style={styles.examText}>
-                  {isExamDone(progress ?? { lessons: [], exams: [], lastStudied: null, streak: 0, streakBest: 0 }, unit.exam.id)
+                  {isExamDone(p, unit.exam.id)
                     ? '✓ '
                     : ''}
                   {unit.exam.title}
@@ -141,6 +153,13 @@ const styles = StyleSheet.create({
   clock: { marginBottom: 2 },
   hello: { color: '#fff', fontSize: 30, fontWeight: '800' },
   streak: { color: '#a79fb8', fontSize: 15 },
+  xp: { color: '#FFD166', fontSize: 15, fontWeight: '700' },
+  goal: { backgroundColor: '#1c1927', borderColor: '#2c2740', borderRadius: 14, borderWidth: 2, gap: 8, padding: 14 },
+  goalHead: { flexDirection: 'row', justifyContent: 'space-between' },
+  goalLabel: { color: '#a79fb8', fontSize: 13, fontWeight: '600' },
+  goalValue: { color: '#EDE9FE', fontSize: 13, fontWeight: '700' },
+  goalTrack: { backgroundColor: '#241f33', borderRadius: 99, height: 10, overflow: 'hidden' },
+  goalFill: { backgroundColor: '#FFD166', borderRadius: 99, height: 10 },
   langRow: { gap: 10, paddingRight: 4 },
   langCard: {
     alignItems: 'center',

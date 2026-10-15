@@ -3,7 +3,7 @@ import { useLocalSearchParams, useRouter } from 'expo-router';
 import { ExercisePlayer } from '@/components/exercise-player';
 import { getExam } from '@/constants/content';
 import type { LanguageId } from '@/constants/languages';
-import { completeExam } from '@/lib/progress';
+import { addXp, completeExam, recordAnswer, reviewKey, XP_PER_CORRECT } from '@/lib/progress';
 
 export default function ExamScreen() {
   const router = useRouter();
@@ -21,10 +21,19 @@ export default function ExamScreen() {
         exercises={exam.exercises}
         language={language}
         onExit={goToMap}
+        onResult={(exerciseId, correct) => {
+          void recordAnswer(reviewKey(exam.id, exerciseId), correct);
+        }}
         onFinish={({ correct, total }) => {
-          void completeExam(exam.id).then(() => {
-            router.replace({ pathname: '/result', params: { id: exam.id, correct: String(correct), total: String(total), lang: language } });
-          });
+          const xp = correct * XP_PER_CORRECT;
+          void completeExam(exam.id)
+            .then(() => addXp(xp))
+            .then(() => {
+              router.replace({
+                pathname: '/result',
+                params: { id: exam.id, correct: String(correct), total: String(total), lang: language, xp: String(xp) },
+              });
+            });
         }}
       />
     );

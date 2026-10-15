@@ -54,7 +54,12 @@ export function drawSession(lesson: Lesson): Exercise[] {
   return shuffle(lesson.pool).slice(0, want);
 }
 
-function shuffle<T>(items: T[]): T[] {
+/** Todos os exercícios de uma lição (fixos + banco), para agendar revisões. */
+export function allExercises(lesson: Lesson): Exercise[] {
+  return [...lesson.exercises, ...(lesson.pool ?? [])];
+}
+
+export function shuffle<T>(items: T[]): T[] {
   const copy = [...items];
   for (let i = copy.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
