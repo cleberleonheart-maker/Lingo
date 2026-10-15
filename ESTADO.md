@@ -185,6 +185,22 @@ Achados numa revisão de navegação/código, nenhum pego pelo typecheck.
   a lista, podendo trocar o exercício no meio da sessão (contrariando o
   comentário original). Passou para `useMemo` (a busca da lição também).
 
+## Padronização do inglês (2026-10-15)
+
+Os 5 idiomas novos seguem o mesmo formato: l1 = 4 exercícios + `pool` +
+`perSession: 10`; l2 = 6 exercícios fixos; l3 = 3 exercícios + `pool` +
+`perSession: 10`. O inglês destoava — l2 tinha 4 e l3 tinha 4 fixos, sem `pool`.
+
+- **`en-u1-l2` foi de 4 para 6**: acrescentado o `fill` `My ___ is Ana.` →
+  `name` e um `choice` novo (significado de "prazer em conhecê-lo" →
+  `nice to meet you`); o `match` foi de 3 para 4 pares.
+- **`en-u1-l3` foi de 4 fixos para 3 + `pool` de 11** com `perSession: 10`
+  (mesmo formato de `es-u1-l3`): os 3 canônicos (fill/choice/listen) ficam em
+  `exercises` e ganharam um banco com fill, `choice` de significado, traduções,
+  `listen` e o `match` que sobrou.
+
+O validador foi de 168 para 177 exercícios e segue com **0 problemas**.
+
 ## Validador de conteúdo
 
 `/tmp/opencode/validate-content.cjs` (fora do repo, é ferramenta de trabalho).

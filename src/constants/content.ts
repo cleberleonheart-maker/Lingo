@@ -258,6 +258,7 @@ const EN: Course = {
               pairs: [
                 { left: 'Hello', right: 'Olá' },
                 { left: 'My name is…', right: 'Meu nome é…' },
+                { left: 'Nice to meet you', right: 'Prazer em conhecê-lo' },
                 { left: 'Thank you', right: 'Obrigado' },
               ],
             },
@@ -269,8 +270,16 @@ const EN: Course = {
               accept: ['my name is ana', 'mynameisana', "my name's ana", "myname'sana"],
             },
             {
-              kind: 'choice',
+              kind: 'fill',
               id: 'e3',
+              before: 'My ',
+              after: ' is Ana.',
+              answer: 'name',
+              accept: ['name'],
+            },
+            {
+              kind: 'choice',
+              id: 'e4',
               prompt: 'Qual destas completa a frase?',
               answer: 'c',
               options: [
@@ -281,10 +290,21 @@ const EN: Course = {
             },
             {
               kind: 'translate',
-              id: 'e4',
-              from: 'Obrigado!',
+              id: 'e5',
+              from: 'Prazer em conhecê-lo.',
               to: 'inglês',
-              accept: ['thank you', 'thanks', 'thankyou'],
+              accept: ['nice to meet you', 'nicetomeetyou'],
+            },
+            {
+              kind: 'choice',
+              id: 'e6',
+              prompt: 'Qual destas significa "prazer em conhecê-lo"?',
+              answer: 'a',
+              options: [
+                { id: 'a', text: 'nice to meet you' },
+                { id: 'b', text: 'thank you' },
+                { id: 'c', text: 'goodbye' },
+              ],
             },
           ],
         },
@@ -292,6 +312,7 @@ const EN: Course = {
           id: 'en-u1-l3',
           title: 'De onde você é',
           subtitle: 'país e nacionalidade',
+          perSession: 10,
           exercises: [
             {
               kind: 'fill',
@@ -318,9 +339,93 @@ const EN: Course = {
               speak: 'I am from Brazil',
               accept: ['i am from brazil', 'imfrombrazil', "i'm from brazil", "i'mfrombrazil"],
             },
+          ],
+          pool: [
+            {
+              kind: 'fill',
+              id: 'p1',
+              before: 'I am ',
+              after: ' Brazil.',
+              answer: 'from',
+              accept: ['from'],
+            },
+            {
+              kind: 'fill',
+              id: 'p2',
+              before: 'I am from ',
+              after: '.',
+              answer: 'Brazil',
+              accept: ['brazil'],
+            },
+            {
+              kind: 'choice',
+              id: 'p3',
+              prompt: '"Where are you from?" responde:',
+              answer: 'b',
+              options: [
+                { id: 'a', text: 'I am fine' },
+                { id: 'b', text: 'I am from Brazil' },
+                { id: 'c', text: 'I am Ana' },
+              ],
+            },
+            {
+              kind: 'choice',
+              id: 'p4',
+              prompt: 'Como se pergunta "de onde você é"?',
+              answer: 'a',
+              options: [
+                { id: 'a', text: 'Where are you from?' },
+                { id: 'b', text: 'How are you?' },
+                { id: 'c', text: 'What is your name?' },
+              ],
+            },
+            {
+              kind: 'choice',
+              id: 'p5',
+              prompt: '"I speak English" significa…',
+              answer: 'c',
+              options: [
+                { id: 'a', text: 'Sou inglês' },
+                { id: 'b', text: 'Estou na Inglaterra' },
+                { id: 'c', text: 'Falo inglês' },
+              ],
+            },
+            {
+              kind: 'translate',
+              id: 'p6',
+              from: 'Sou do Brasil.',
+              to: 'inglês',
+              accept: ['i am from brazil', 'imfrombrazil', "i'm from brazil", "i'mfrombrazil"],
+            },
+            {
+              kind: 'translate',
+              id: 'p7',
+              from: 'Eu falo inglês.',
+              to: 'inglês',
+              accept: ['i speak english', 'ispeakenglish'],
+            },
+            {
+              kind: 'translate',
+              id: 'p8',
+              from: 'Eu moro no Brasil.',
+              to: 'inglês',
+              accept: ['i live in brazil', 'iliveinbrazil'],
+            },
+            {
+              kind: 'listen',
+              id: 'p9',
+              speak: 'I am from Brazil',
+              accept: ['i am from brazil', 'imfrombrazil', "i'm from brazil", "i'mfrombrazil"],
+            },
+            {
+              kind: 'listen',
+              id: 'p10',
+              speak: 'I speak English',
+              accept: ['i speak english', 'ispeakenglish'],
+            },
             {
               kind: 'match',
-              id: 'e4',
+              id: 'p11',
               pairs: [
                 { left: 'from', right: 'de' },
                 { left: 'where', right: 'onde' },
