@@ -119,6 +119,33 @@ typecheck** — passavam com TS limpo. Só apareceram porque o app foi rodado.
    entre `/lesson/en-u1-l2` e `/lesson/fr-u1-l2`, então a francesa abria no
    índice que a inglesa deixou. Agora leva `key` por id de lição/prova.
 
+## Bugs remanescentes (2026-10-15)
+
+Revisão dos 7 bugs acima contra o código atual. Os de navegação (4–7) seguem
+corrigidos. O bug 2, porém, tinha sobrado em 2 exercícios: a correção de
+2026-09-29 reescreveu os `pool`, e os arrays `exercises` (a ordem canônica da
+primeira vez da lição) ficaram para trás.
+
+- **`fr-u1-l3` `e2`** — o enunciado era `"Je viens du Brésil" veut dire…` (em
+  francês) e a opção certa era o próprio `Je viens du Brésil`. Reescrito no
+  padrão do `p4`: pergunta em português e opções de significado em português.
+- **`ja-u1-l1` `e1`** — o enunciado se contradizia:
+  `「おはようございます」は?|Qual destas frases é a boa-noite?` com resposta
+  `おはようございます` (bom dia). Trocado pelo padrão do `p1`, só em português.
+
+Mais 2 defeitos achados na revisão, nenhum deles entre os 7 originais:
+
+- **O `|` aparecia literal na tela** — o player renderizava `exercise.prompt`
+  cru, então os 11 enunciados de japonês no formato `「kana」…?|português`
+  mostravam a barra. Agora `renderPrompt` divide no `|`: a primeira parte vira o
+  enunciado e a segunda, uma linha menor (`promptSub`).
+- **`match` sempre dizia "inglês ↔ português"** — o rótulo era fixo, até em
+  es/fr/de/it/ja. Agora usa o nome do idioma da lição.
+
+Também removido um `accept` duplicado (`['burajiru', 'burajiru']`) em `ja-u1-l3`.
+
+O validador passou a reportar **0 problemas** nos 168 exercícios.
+
 ## Validador de conteúdo
 
 `/tmp/opencode/validate-content.cjs` (fora do repo, é ferramenta de trabalho).

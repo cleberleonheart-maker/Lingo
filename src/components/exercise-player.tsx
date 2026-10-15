@@ -272,8 +272,15 @@ function showAnswer(exercise: Exercise) {
 
 function renderPrompt(exercise: Exercise, languageName: string, onSpeak: () => void) {
   switch (exercise.kind) {
-    case 'choice':
-      return <Text style={styles.prompt}>{exercise.prompt}</Text>;
+    case 'choice': {
+      const [main, sub] = exercise.prompt.split('|');
+      return (
+        <View style={styles.promptBox}>
+          <Text style={styles.prompt}>{main}</Text>
+          {sub ? <Text style={styles.promptSub}>{sub}</Text> : null}
+        </View>
+      );
+    }
     case 'translate':
       return (
         <View style={styles.promptBox}>
@@ -308,7 +315,7 @@ function renderPrompt(exercise: Exercise, languageName: string, onSpeak: () => v
       return (
         <View style={styles.promptBox}>
           <Text style={styles.promptLabel}>relacione</Text>
-          <Text style={styles.promptBig}>inglês ↔ português</Text>
+          <Text style={styles.promptBig}>{languageName.toLowerCase()} ↔ português</Text>
         </View>
       );
   }
@@ -324,6 +331,7 @@ const styles = StyleSheet.create({
   body: { flex: 1, justifyContent: 'center' },
   promptBox: { alignItems: 'center', gap: 12 },
   prompt: { color: '#EDE9FE', fontSize: 24, fontWeight: '700', lineHeight: 32 },
+  promptSub: { color: '#9a92ad', fontSize: 15, fontWeight: '600', marginTop: -4, textAlign: 'center' },
   promptLabel: { color: '#7c7590', fontSize: 13, textTransform: 'uppercase', letterSpacing: 1 },
   promptBig: { color: '#fff', fontSize: 28, fontWeight: '700', textAlign: 'center' },
   promptGap: { color: '#7C5CFF' },

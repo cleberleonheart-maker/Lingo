@@ -15,7 +15,7 @@ export const JA: Unit = {
       subtitle: 'ohayou gozaimasu',
       perSession: 10,
       exercises: [
-        { kind: 'choice', id: 'e1', prompt: '「おはようございます」は?|Qual destas frases é a boa-noite?', answer: 'b', options: [{ id: 'a', text: 'こんばんは' }, { id: 'b', text: 'おはようございます' }, { id: 'c', text: 'さようなら' }] },
+        { kind: 'choice', id: 'e1', prompt: 'Qual destas frases significa "bom dia"?', answer: 'b', options: [{ id: 'a', text: 'こんばんは' }, { id: 'b', text: 'おはようございます' }, { id: 'c', text: 'さようなら' }] },
         { kind: 'translate', label: 'leia em romaji: kana -> teclado', id: 'e2', from: 'こんにちは', to: 'japonês (romaji)', accept: ['konnichiwa'] },
         { kind: 'listen', id: 'e3', speak: 'こんばんは', accept: ['konbanwa'] },
         { kind: 'fill', id: 'e4', before: 'ohayou ', after: '!', answer: 'gozaimasu', accept: ['gozaimasu'] },
@@ -73,7 +73,7 @@ export const JA: Unit = {
       subtitle: 'wa doko kara',
       perSession: 10,
       exercises: [
-        { kind: 'fill', id: 'e1', before: 'わたしは', after: 'からです。', answer: 'burajiru', accept: ['burajiru', 'burajiru'] },
+        { kind: 'fill', id: 'e1', before: 'わたしは', after: 'からです。', answer: 'burajiru', accept: ['burajiru'] },
         { kind: 'choice', id: 'e2', prompt: '「わたしはブラジルからです」は?|O que "watashi wa burajiru kara desu" quer dizer?', answer: 'b', options: [{ id: 'a', text: 'わたしはアナです (me chamo Ana)' }, { id: 'b', text: 'ブラジルから来ました (vim do Brasil)' }, { id: 'c', text: 'ブラジルへ行きます (vou ao Brasil)' }] },
         { kind: 'listen', id: 'e3', speak: 'わたしはブラジルからです', accept: ['watashi wa burajiru kara desu'] },
       ],

@@ -70,7 +70,7 @@ export const FR: Unit = {
       perSession: 10,
       exercises: [
         { kind: 'fill', id: 'e1', before: 'Je viens ', after: ' Brésil.', answer: 'du', accept: ['du', 'de'] },
-        { kind: 'choice', id: 'e2', prompt: '"Je viens du Brésil" veut dire…', answer: 'b', options: [{ id: 'a', text: "Je m'appelle Ana" }, { id: 'b', text: 'Je viens du Brésil' }, { id: 'c', text: 'Je vais au Brésil' }] },
+        { kind: 'choice', id: 'e2', prompt: 'O que "Je viens du Brésil" quer dizer?', answer: 'b', options: [{ id: 'a', text: 'Eu me chamo Ana' }, { id: 'b', text: 'Eu venho do Brasil' }, { id: 'c', text: 'Eu vou para o Brasil' }] },
         { kind: 'listen', id: 'e3', speak: 'Je viens du Brésil', accept: ['je viens du bresil'] },
       ],
       pool: [
