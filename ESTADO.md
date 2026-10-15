@@ -36,9 +36,10 @@ pararia de bater.
 **Progresso (`src/lib/progress.ts`)** — AsyncStorage, com streak e
 `streakBest`. `touchStudy` só avança o streak se for o dia seguinte.
 
-**Telas** — `(tabs)/index` é o mapa, `(tabs)/languages` a lista de idiomas,
-`lesson/[id]` e `exam/[id]` rodam o `ExercisePlayer`, `result` mostra o placar.
-O `_layout` virou `Stack` porque as tabs prendiam as telas de exercício.
+**Telas** — o `_layout` raiz é um `Stack`: `lesson/[id]` e `exam/[id]` rodam o
+`ExercisePlayer` e `result` mostra o placar, todos fora das abas para não prender
+a navegação de exercício. O grupo `(tabs)` tem `_layout` próprio com `NativeTabs`
+(`app-tabs`): `index` é o mapa e `languages` a lista de idiomas.
 
 **`ExercisePlayer`** — barra de progresso, um exercício por vez, feedback
 imediato (verde/vermelho + resposta certa), botão "Continuar" que só aparece
@@ -162,6 +163,27 @@ Revisão de todos os idiomas além do que o validador já pega.
 
 O validador ganhou uma regra nova (palavra de outro idioma no lado em
 português) e segue reportando **0 problemas**.
+
+## Navegação e código morto (2026-10-15)
+
+Achados numa revisão de navegação/código, nenhum pego pelo typecheck.
+
+- **Faltava `(tabs)/_layout.tsx`** — o grupo `(tabs)` tinha só `index` e
+  `languages`, sem layout. Sem esse arquivo o grupo não vira navegador: não havia
+  barra de abas, a tela **Idiomas (`/languages`) era inalcançável** (nada
+  navegava até ela) e `AppTabs` ficava órfão. O `<Stack.Screen name="(tabs)" />`
+  do root apontava para uma rota que não existia. Recriado como
+  `src/app/(tabs)/_layout.tsx`, reexportando o `AppTabs` — restaura as abas
+  "Mapa" e "Idiomas".
+- **Código morto do template removido** — `src/components/hint-row.tsx`,
+  `src/components/web-badge.tsx` e `src/components/ui/collapsible.tsx` não eram
+  importados por ninguém. O cluster que o `AppTabs` usa (`external-link`,
+  `themed-text`, `themed-view`, `use-theme`, `use-color-scheme`, `theme`) fica.
+- **`drawSession` recalculado a cada render** — em `lesson/[id].tsx` o sorteio
+  estava inline no JSX (`exercises={drawSession(lesson)}`). Como o `key` é
+  estável durante a lição, um re-render **não remonta** o player mas reembaralha
+  a lista, podendo trocar o exercício no meio da sessão (contrariando o
+  comentário original). Passou para `useMemo` (a busca da lição também).
 
 ## Validador de conteúdo
 
