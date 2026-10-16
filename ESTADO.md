@@ -228,6 +228,18 @@ O validador foi de 168 para 177 exercícios e segue com **0 problemas**.
   morre com `configs.toReversed is not a function`, erro que não aponta para a
   causa; agora o `npm` avisa antes.
 
+## Lógica de jogo e paleta (2026-10-16)
+
+- **`src/lib/quiz.ts`** — a lógica que estava presa dentro do `ExercisePlayer`
+  (`isAnswerCorrect`, `linkPair`, `isMatchComplete`, `loseHeart`/`MAX_HEARTS`,
+  `nextStep`) virou funções puras, cobertas por `test/quiz.test.ts`. O componente
+  só chama essas funções e guarda o estado. Antes, a regra de vidas/placar só dava
+  para testar montando a tela inteira.
+- **Paleta `INK`** — `exercise-player`, `index`, `languages`, `result`,
+  `local-clock` e o `_layout` trocaram os literais (`#12101a`, `#7C5CFF`…) pelas
+  chaves de `INK` (`@/constants/theme`). Cores que não existem no `INK`
+  (`#FFD166`, `#2a2142`, `#6f6880`, `#9a92ad`, `#c9c2d8`) continuam literais.
+
 ## Validador de conteúdo
 
 Mora no repo: `src/lib/validate-content.ts` (`findContentProblems()`), coberto
