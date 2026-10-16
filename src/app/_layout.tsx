@@ -1,6 +1,7 @@
 import { Stack } from 'expo-router';
 
 import { AnimatedSplashOverlay } from '@/components/animated-icon';
+import { INK } from '@/constants/theme';
 
 export default function RootLayout() {
   return (
@@ -9,7 +10,7 @@ export default function RootLayout() {
       <Stack
         screenOptions={{
           animation: 'slide_from_right',
-          contentStyle: { backgroundColor: '#12101a' },
+          contentStyle: { backgroundColor: INK.bg },
           headerShown: false,
         }}>
         <Stack.Screen name="(tabs)" />

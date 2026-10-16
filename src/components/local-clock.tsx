@@ -2,6 +2,8 @@ import { useEffect, useState } from 'react';
 import { AppState, StyleSheet, Text, View } from 'react-native';
 import * as Localization from 'expo-localization';
 
+import { INK } from '@/constants/theme';
+
 /** `pt-BR` → `pt`, para o `Intl` escolher o formato certo. */
 function baseLanguage() {
   const tag = Localization.getLocales()[0]?.languageTag;
@@ -61,10 +63,10 @@ export function LocalClock({ style }: { style?: object }) {
 const styles = StyleSheet.create({
   root: { alignItems: 'flex-end', gap: 1 },
   time: {
-    color: '#EDE9FE',
+    color: INK.text,
     fontSize: 15,
     fontWeight: '700',
     fontVariant: ['tabular-nums'],
   },
-  zone: { color: '#7c7590', fontSize: 11 },
+  zone: { color: INK.dim, fontSize: 11 },
 });

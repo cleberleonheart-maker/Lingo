@@ -50,7 +50,7 @@
     "ios": "expo start --ios",
     "web": "expo start --web",
     "lint": "expo lint",
-    "test": "esbuild test/content.test.ts test/validator.test.ts --bundle --platform=node --format=esm --alias:@=./src --outdir=.test-build --out-extension:.js=.mjs && node --test .test-build/content.test.mjs .test-build/validator.test.mjs",
+    "test": "esbuild test/content.test.ts test/quiz.test.ts test/validator.test.ts --bundle --platform=node --format=esm --alias:@=./src --outdir=.test-build --out-extension:.js=.mjs && node --test .test-build/content.test.mjs .test-build/quiz.test.mjs .test-build/validator.test.mjs",
     "typecheck": "tsc --noEmit"
   },
   "private": true

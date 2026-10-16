@@ -5,6 +5,7 @@ import Animated, { FadeIn, ZoomIn } from 'react-native-reanimated';
 
 import { Avatar } from '@/components/avatar';
 import { LANGUAGE_LIST, type LanguageId } from '@/constants/languages';
+import { INK } from '@/constants/theme';
 
 export default function Result() {
   const router = useRouter();
@@ -58,16 +59,16 @@ export default function Result() {
 }
 
 const styles = StyleSheet.create({
-  root: { backgroundColor: '#12101a', flex: 1, gap: 24, paddingHorizontal: 24 },
+  root: { backgroundColor: INK.bg, flex: 1, gap: 24, paddingHorizontal: 24 },
   avatarWrap: { alignItems: 'center' },
   text: { alignItems: 'center', gap: 6 },
-  title: { color: '#fff', fontSize: 30, fontWeight: '800' },
-  sub: { color: '#a79fb8', fontSize: 17 },
+  title: { color: INK.white, fontSize: 30, fontWeight: '800' },
+  sub: { color: INK.muted, fontSize: 17 },
   xpChip: { color: '#FFD166', fontSize: 16, fontWeight: '700', marginTop: 4 },
-  hint: { color: '#7c7590', fontSize: 14, marginTop: 6, textAlign: 'center' },
+  hint: { color: INK.dim, fontSize: 14, marginTop: 6, textAlign: 'center' },
   actions: { gap: 10, marginTop: 'auto' },
-  primary: { backgroundColor: '#7C5CFF', borderRadius: 16, padding: 17 },
-  primaryText: { color: '#fff', fontSize: 17, fontWeight: '700', textAlign: 'center' },
-  secondary: { backgroundColor: '#241f33', borderRadius: 16, padding: 17 },
-  secondaryText: { color: '#EDE9FE', fontSize: 17, fontWeight: '700', textAlign: 'center' },
+  primary: { backgroundColor: INK.violet, borderRadius: 16, padding: 17 },
+  primaryText: { color: INK.white, fontSize: 17, fontWeight: '700', textAlign: 'center' },
+  secondary: { backgroundColor: INK.cardAlt, borderRadius: 16, padding: 17 },
+  secondaryText: { color: INK.text, fontSize: 17, fontWeight: '700', textAlign: 'center' },
 });

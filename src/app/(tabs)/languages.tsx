@@ -5,6 +5,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Avatar } from '@/components/avatar';
 import { COURSES } from '@/constants/content';
 import { LANGUAGE_LIST } from '@/constants/languages';
+import { INK } from '@/constants/theme';
 
 export default function Languages() {
   const router = useRouter();
@@ -43,13 +44,13 @@ export default function Languages() {
 }
 
 const styles = StyleSheet.create({
-  bg: { backgroundColor: '#12101a', flex: 1 },
+  bg: { backgroundColor: INK.bg, flex: 1 },
   root: { gap: 12, paddingHorizontal: 20 },
-  title: { color: '#fff', fontSize: 30, fontWeight: '800' },
-  sub: { color: '#a79fb8', fontSize: 15, marginBottom: 6, marginTop: -8 },
-  row: { alignItems: 'center', backgroundColor: '#1c1927', borderRadius: 18, flexDirection: 'row', gap: 14, padding: 14 },
+  title: { color: INK.white, fontSize: 30, fontWeight: '800' },
+  sub: { color: INK.muted, fontSize: 15, marginBottom: 6, marginTop: -8 },
+  row: { alignItems: 'center', backgroundColor: INK.card, borderRadius: 18, flexDirection: 'row', gap: 14, padding: 14 },
   rowText: { flex: 1, gap: 2 },
-  name: { color: '#EDE9FE', fontSize: 17, fontWeight: '700' },
-  count: { color: '#7c7590', fontSize: 13 },
-  chev: { color: '#7c7590', fontSize: 26 },
+  name: { color: INK.text, fontSize: 17, fontWeight: '700' },
+  count: { color: INK.dim, fontSize: 13 },
+  chev: { color: INK.dim, fontSize: 26 },
 });

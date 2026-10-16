@@ -4,8 +4,17 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as Speech from 'expo-speech';
 import Animated, { FadeIn } from 'react-native-reanimated';
 
-import { checkAnswer, shuffle, type Exercise } from '@/constants/content';
+import { shuffle, type Exercise } from '@/constants/content';
 import { LANGUAGES, type LanguageId } from '@/constants/languages';
+import { INK } from '@/constants/theme';
+import {
+  isAnswerCorrect,
+  isMatchComplete,
+  linkPair,
+  loseHeart,
+  MAX_HEARTS,
+  nextStep,
+} from '@/lib/quiz';
 
 import { Avatar } from './avatar';
 
@@ -18,18 +27,6 @@ type Props = {
   /** Resultado de cada exercício, para a repetição espaçada. */
   onResult?: (exerciseId: string, correct: boolean) => void;
 };
-
-/** Em `match`, o acerto é todos os pares ligados corretamente. */
-function matches(exercise: Exercise, given: string, linked: Map<string, string> | null) {
-  if (exercise.kind === 'match') {
-    if (!linked) return false;
-    return exercise.pairs.every((p) => linked.get(p.left) === p.right);
-  }
-  return checkAnswer(exercise, given);
-}
-
-/** Vidas por sessão. Errar desconta; zerar encerra a lição sem concluir. */
-const MAX_HEARTS = 3;
 
 export function ExercisePlayer({ language, exercises, onFinish, onExit, onResult }: Props) {
   const insets = useSafeAreaInsets();
@@ -77,19 +74,20 @@ export function ExercisePlayer({ language, exercises, onFinish, onExit, onResult
     setLinked(new Map());
   }
 
-  function loseHeart() {
-    const left = hearts - 1;
-    setHearts(Math.max(0, left));
-    if (left <= 0) setDead(true);
+  function loseAHeart() {
+    const next = loseHeart(hearts);
+    setHearts(next.hearts);
+    if (next.dead) setDead(true);
   }
 
   function advance(wasCorrect: boolean) {
-    if (wasCorrect) setCorrectCount((c) => c + 1);
-    if (index + 1 >= total) {
-      onFinish({ correct: correctCount + (wasCorrect ? 1 : 0), total });
+    const step = nextStep(index, total, correctCount, wasCorrect);
+    if (step.finished) {
+      onFinish({ correct: step.correct, total });
       return;
     }
-    setIndex((i) => i + 1);
+    if (wasCorrect) setCorrectCount(step.correct);
+    setIndex(step.index);
     reset();
   }
 
@@ -97,19 +95,19 @@ export function ExercisePlayer({ language, exercises, onFinish, onExit, onResult
     if (done || dead) return;
     const value = raw ?? picked ?? given;
     if (exercise.kind === 'match') {
-      const ok = matches(exercise, '', linked);
+      const ok = isAnswerCorrect(exercise, '', linked);
       setDone(true);
       onResult?.(exercise.id, ok);
       if (ok) Speech.stop();
-      else loseHeart();
+      else loseAHeart();
       return;
     }
     if (!value) return;
-    const ok = matches(exercise, value, null);
+    const ok = isAnswerCorrect(exercise, value, null);
     setDone(true);
     onResult?.(exercise.id, ok);
     if (ok) Speech.stop();
-    else loseHeart();
+    else loseAHeart();
   }
 
   function tapMatch(side: 'left' | 'right', value: string) {
@@ -119,22 +117,20 @@ export function ExercisePlayer({ language, exercises, onFinish, onExit, onResult
       return;
     }
     if (!matchSel) return;
-    const next = new Map(linked);
-    for (const [k, v] of next) if (v === value) next.delete(k);
-    next.set(matchSel, value);
+    const next = linkPair(linked, matchSel, value);
     setLinked(next);
     setMatchSel(null);
-    if (next.size === pairs.length) {
-      const ok = pairs.every((p) => next.get(p.left) === p.right);
+    if (isMatchComplete(exercise as Exercise & { kind: 'match' }, next)) {
+      const ok = isAnswerCorrect(exercise, '', next);
       setDone(true);
       onResult?.(exercise.id, ok);
       if (ok) Speech.stop();
-      else loseHeart();
+      else loseAHeart();
     }
   }
 
   const answered = done;
-  const wasRight = answered && matches(exercise, picked ?? given, linked);
+  const wasRight = answered && isAnswerCorrect(exercise, picked ?? given, linked);
 
   return (
     <View style={[styles.root, { paddingTop: insets.top + 8, paddingBottom: insets.bottom + 12 }]}>
@@ -190,7 +186,7 @@ export function ExercisePlayer({ language, exercises, onFinish, onExit, onResult
               onChangeText={setGiven}
               onSubmitEditing={() => submit()}
               placeholder="escreva aqui"
-              placeholderTextColor="#7c7590"
+              placeholderTextColor={INK.dim}
               returnKeyType="done"
               style={styles.input}
               value={given}
@@ -342,24 +338,24 @@ function renderPrompt(exercise: Exercise, languageName: string, onSpeak: () => v
 }
 
 const styles = StyleSheet.create({
-  root: { backgroundColor: '#12101a', flex: 1, paddingHorizontal: 20 },
+  root: { backgroundColor: INK.bg, flex: 1, paddingHorizontal: 20 },
   topBar: { alignItems: 'center', flexDirection: 'row', gap: 12 },
   iconBtn: { padding: 6 },
   icon: { color: '#6f6880', fontSize: 18 },
-  track: { backgroundColor: '#241f33', borderRadius: 99, flex: 1, height: 12, overflow: 'hidden' },
-  fill: { backgroundColor: '#7C5CFF', borderRadius: 99, height: 12 },
-  hearts: { color: '#fff', fontSize: 15, fontWeight: '700' },
+  track: { backgroundColor: INK.cardAlt, borderRadius: 99, flex: 1, height: 12, overflow: 'hidden' },
+  fill: { backgroundColor: INK.violet, borderRadius: 99, height: 12 },
+  hearts: { color: INK.white, fontSize: 15, fontWeight: '700' },
   body: { flex: 1, justifyContent: 'center' },
   promptBox: { alignItems: 'center', gap: 12 },
-  prompt: { color: '#EDE9FE', fontSize: 24, fontWeight: '700', lineHeight: 32 },
+  prompt: { color: INK.text, fontSize: 24, fontWeight: '700', lineHeight: 32 },
   promptSub: { color: '#9a92ad', fontSize: 15, fontWeight: '600', marginTop: -4, textAlign: 'center' },
-  promptLabel: { color: '#7c7590', fontSize: 13, textTransform: 'uppercase', letterSpacing: 1 },
-  promptBig: { color: '#fff', fontSize: 28, fontWeight: '700', textAlign: 'center' },
-  promptGap: { color: '#7C5CFF' },
-  promptHint: { color: '#7c7590', fontSize: 14, textAlign: 'center' },
+  promptLabel: { color: INK.dim, fontSize: 13, textTransform: 'uppercase', letterSpacing: 1 },
+  promptBig: { color: INK.white, fontSize: 28, fontWeight: '700', textAlign: 'center' },
+  promptGap: { color: INK.violet },
+  promptHint: { color: INK.dim, fontSize: 14, textAlign: 'center' },
   speaker: {
     alignItems: 'center',
-    backgroundColor: '#241f33',
+    backgroundColor: INK.cardAlt,
     borderRadius: 99,
     height: 92,
     justifyContent: 'center',
@@ -367,38 +363,38 @@ const styles = StyleSheet.create({
   },
   speakerIcon: { fontSize: 38 },
   options: { gap: 10, marginTop: 24 },
-  option: { backgroundColor: '#241f33', borderColor: '#3a3350', borderRadius: 14, borderWidth: 2, padding: 16 },
-  optionOk: { backgroundColor: '#14361f', borderColor: '#3FB950' },
-  optionBad: { backgroundColor: '#3a1620', borderColor: '#F85149' },
+  option: { backgroundColor: INK.cardAlt, borderColor: INK.borderStrong, borderRadius: 14, borderWidth: 2, padding: 16 },
+  optionOk: { backgroundColor: INK.okBg, borderColor: INK.ok },
+  optionBad: { backgroundColor: INK.badBg, borderColor: INK.bad },
   optionDim: { opacity: 0.4 },
-  optionText: { color: '#EDE9FE', fontSize: 17, fontWeight: '600' },
+  optionText: { color: INK.text, fontSize: 17, fontWeight: '600' },
   input: {
-    backgroundColor: '#241f33',
-    borderColor: '#3a3350',
+    backgroundColor: INK.cardAlt,
+    borderColor: INK.borderStrong,
     borderRadius: 14,
     borderWidth: 2,
-    color: '#fff',
+    color: INK.white,
     fontSize: 18,
     marginTop: 24,
     padding: 16,
   },
-  fillPreview: { color: '#7c7590', fontSize: 15, marginTop: 10, textAlign: 'center' },
-  fillBlank: { color: '#7C5CFF', fontWeight: '700' },
+  fillPreview: { color: INK.dim, fontSize: 15, marginTop: 10, textAlign: 'center' },
+  fillBlank: { color: INK.violet, fontWeight: '700' },
   matchWrap: { flexDirection: 'row', gap: 10, marginTop: 24 },
   matchCol: { flex: 1, gap: 8 },
-  chip: { backgroundColor: '#241f33', borderColor: '#3a3350', borderRadius: 12, borderWidth: 2, gap: 2, padding: 12 },
+  chip: { backgroundColor: INK.cardAlt, borderColor: INK.borderStrong, borderRadius: 12, borderWidth: 2, gap: 2, padding: 12 },
   chipRight: { alignItems: 'flex-end' },
-  chipSel: { borderColor: '#7C5CFF' },
-  chipDone: { backgroundColor: '#14361f', borderColor: '#3FB950' },
-  chipText: { color: '#EDE9FE', fontSize: 15, fontWeight: '600' },
-  chipArrow: { color: '#3FB950', fontSize: 12 },
+  chipSel: { borderColor: INK.violet },
+  chipDone: { backgroundColor: INK.okBg, borderColor: INK.ok },
+  chipText: { color: INK.text, fontSize: 15, fontWeight: '600' },
+  chipArrow: { color: INK.ok, fontSize: 12 },
   footer: { gap: 10 },
   banner: { borderRadius: 14, padding: 14 },
-  bannerOk: { backgroundColor: '#14361f' },
-  bannerBad: { backgroundColor: '#3a1620' },
-  bannerTitle: { color: '#fff', fontSize: 16, fontWeight: '700' },
+  bannerOk: { backgroundColor: INK.okBg },
+  bannerBad: { backgroundColor: INK.badBg },
+  bannerTitle: { color: INK.white, fontSize: 16, fontWeight: '700' },
   bannerBody: { color: '#c9c2d8', fontSize: 14, marginTop: 4 },
-  cta: { backgroundColor: '#7C5CFF', borderRadius: 14, padding: 16 },
+  cta: { backgroundColor: INK.violet, borderRadius: 14, padding: 16 },
   ctaOff: { opacity: 0.35 },
-  ctaText: { color: '#fff', fontSize: 17, fontWeight: '700', textAlign: 'center' },
+  ctaText: { color: INK.white, fontSize: 17, fontWeight: '700', textAlign: 'center' },
 });
