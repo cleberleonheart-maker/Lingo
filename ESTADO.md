@@ -256,6 +256,13 @@ O validador foi de 168 para 177 exercícios e segue com **0 problemas**.
 - **`engines` corrigido para `node >=22.13.0`** — era `>=20.19.4`, mas o Expo SDK
   57 exige Node 22.13.x no mínimo (tabela oficial dos docs versionados). O CI já
   usa Node 22.
+- **CI vermelho consertado** — o `verify` falhava no typecheck desde o commit
+  `dcc039e` (nos 3 commits seguintes também). Causa: `expo-env.d.ts` (que faz
+  `/// <reference types="expo/types" />`, onde o Expo declara `*.css`/`*.module.css`)
+  está no `.gitignore`, então um checkout limpo não o tem e o `tsc` quebrava em
+  `theme.ts` (`@/global.css`) e `animated-icon.web.tsx`. Em vez de commitar o
+  arquivo gerado, o `expo/types` entrou em `compilerOptions.types` do
+  `tsconfig.json` — resolve com ou sem o `expo-env.d.ts` presente.
 
 ## Validador de conteúdo
 
