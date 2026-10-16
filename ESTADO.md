@@ -87,8 +87,6 @@ em checagem de tipo; só aparece quando alguém faz a lição e olha o resultado
 - `package-lock.json` é novo e nunca foi revisado.
 - Áudio do japonês depende de voz instalada no `expo-speech`; não confirmado em
   hardware real.
-- Acessibilidade: barra de progresso, vidas, opções/chips e faixas de feedback
-  já foram tratadas (2026-10-16); falta revisar o foco do botão "Continuar".
 
 ## Bugs de conteúdo achados rodando (2026-09-29, tarde)
 
@@ -244,9 +242,11 @@ O validador foi de 168 para 177 exercícios e segue com **0 problemas**.
 - **Acessibilidade no player e no mapa** — a barra de progresso e a meta diária
   viraram `accessibilityRole="progressbar"` com `accessibilityValue`; as opções e
   os chips do `match` ganharam `accessibilityState` (`selected`/`disabled`); o
-  contador de vidas tem `accessibilityLabel` ("2 de 3 vidas"); a faixa de
-  feedback é `accessibilityLiveRegion="polite"` (Android/web) e o iOS recebe
-  `AccessibilityInfo.announceForAccessibility` (que não tem `liveRegion`).
+  contador de vidas tem `accessibilityLabel` ("2 de 3 vidas"). Depois de
+  responder, o foco do leitor de tela vai para o botão "Continuar"
+  (`findNodeHandle` + `AccessibilityInfo.setAccessibilityFocus`) e o rótulo do
+  botão já carrega o resultado ("Quase! <resposta>. Continuar"), então o feedback
+  e o avanço ficam num único passo. Na web o `setAccessibilityFocus` é no-op.
 - **Campo `to` removido do `translate`** — era dado morto: aparecia em ~78
   lugares e nunca era lido (nem no render, nem no validador). Saiu do tipo em
   `content.ts` e dos 6 arquivos de conteúdo; o teste que o usava foi corrigido.
@@ -263,6 +263,14 @@ O validador foi de 168 para 177 exercícios e segue com **0 problemas**.
   `theme.ts` (`@/global.css`) e `animated-icon.web.tsx`. Em vez de commitar o
   arquivo gerado, o `expo/types` entrou em `compilerOptions.types` do
   `tsconfig.json` — resolve com ou sem o `expo-env.d.ts` presente.
+- **`npm audit` (2026-10-16)** — acusa 32 vulnerabilidades (1 crítica, 20 altas,
+  11 moderadas). Todas transitivas do **toolchain de build** (`metro`,
+  `@expo/cli`, `@expo/metro-config`, `shell-quote`, `braces`, `@react-native/*-cli-plugin`),
+  não do código que vai no bundle. As diretas (`expo`, `react-native`,
+  `react-native-reanimated`, `react-native-worklets`, `expo-router`,
+  `expo-splash-screen`) apontam para dependências dessas ferramentas. Não vale
+  `npm audit fix --force`: mexeria nas versões presas pelo Expo SDK 57. A
+  correção vem com atualização do SDK.
 
 ## Validador de conteúdo
 

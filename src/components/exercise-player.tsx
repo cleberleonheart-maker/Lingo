@@ -1,5 +1,5 @@
-import { useEffect, useMemo, useState } from 'react';
-import { AccessibilityInfo, Platform, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
+import { useEffect, useMemo, useRef, useState } from 'react';
+import { AccessibilityInfo, findNodeHandle, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as Speech from 'expo-speech';
 import Animated, { FadeIn } from 'react-native-reanimated';
@@ -39,6 +39,7 @@ export function ExercisePlayer({ language, exercises, onFinish, onExit, onResult
   const [linked, setLinked] = useState<Map<string, string>>(new Map());
   const [hearts, setHearts] = useState(MAX_HEARTS);
   const [dead, setDead] = useState(false);
+  const ctaRef = useRef<View>(null);
 
   const exercise = exercises[index];
   const lang = LANGUAGES[language];
@@ -66,21 +67,15 @@ export function ExercisePlayer({ language, exercises, onFinish, onExit, onResult
     };
   }, [exercise, language]);
 
-  // O iOS não tem `accessibilityLiveRegion`: anuncia o resultado na mão para o
-  // VoiceOver. No Android/web a faixa de feedback já é lida sozinha.
+  // Depois de responder, o foco do leitor de tela vai para o "Continuar". O
+  // rótulo do botão já traz o resultado ("Quase! <resposta>. Continuar"), então
+  // quem usa leitor de tela ouve o feedback e já fica no botão para avançar —
+  // sem precisar procurar na tela.
   useEffect(() => {
-    if (!done || Platform.OS !== 'ios') return;
-    if (dead) {
-      AccessibilityInfo.announceForAccessibility(
-        'Acabaram as vidas. Volte mais tarde e refaça esta lição.'
-      );
-      return;
-    }
-    const ok = isAnswerCorrect(exercise, picked ?? given, linked);
-    AccessibilityInfo.announceForAccessibility(
-      ok ? 'Isso aí!' : `Quase! ${showAnswer(exercise)}`
-    );
-  }, [done, dead, exercise, picked, given, linked]);
+    if (!done) return;
+    const node = ctaRef.current ? findNodeHandle(ctaRef.current) : null;
+    if (node) AccessibilityInfo.setAccessibilityFocus(node);
+  }, [done]);
 
   function reset() {
     setGiven('');
@@ -266,7 +261,7 @@ export function ExercisePlayer({ language, exercises, onFinish, onExit, onResult
 
       <Animated.View entering={FadeIn.duration(140)} style={styles.footer}>
         {dead ? (
-          <View accessible accessibilityLiveRegion="polite" style={[styles.banner, styles.bannerBad]}>
+          <View accessible style={[styles.banner, styles.bannerBad]}>
             <Text style={styles.bannerTitle}>Acabaram as vidas 💔</Text>
             <Text style={styles.bannerBody}>Volte mais tarde e refaça esta lição.</Text>
           </View>
@@ -274,7 +269,6 @@ export function ExercisePlayer({ language, exercises, onFinish, onExit, onResult
           answered && (
             <View
               accessible
-              accessibilityLiveRegion="polite"
               style={[styles.banner, wasRight ? styles.bannerOk : styles.bannerBad]}>
               <Text style={styles.bannerTitle}>{wasRight ? 'Isso aí!' : 'Quase!'}</Text>
               {!wasRight && <Text style={styles.bannerBody}>{showAnswer(exercise)}</Text>}
@@ -282,10 +276,20 @@ export function ExercisePlayer({ language, exercises, onFinish, onExit, onResult
           )
         )}
         <Pressable
+          accessibilityLabel={
+            dead
+              ? 'Acabaram as vidas. Voltar ao mapa'
+              : !answered
+                ? 'Verificar'
+                : wasRight
+                  ? 'Isso aí! Continuar'
+                  : `Quase! ${showAnswer(exercise)}. Continuar`
+          }
           accessibilityRole="button"
           accessibilityState={{ disabled: !answered && !dead }}
           disabled={!answered && !dead}
           onPress={() => (dead ? onExit() : advance(wasRight))}
+          ref={ctaRef}
           style={[styles.cta, !answered && !dead && styles.ctaOff]}>
           <Text style={styles.ctaText}>{dead ? 'Voltar ao mapa' : answered ? 'Continuar' : 'Verificar'}</Text>
         </Pressable>
