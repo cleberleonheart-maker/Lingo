@@ -18,6 +18,7 @@ import {
   rewardState,
   type Progress,
 } from '@/lib/progress';
+import { dueItems } from '@/lib/review-queue';
 
 export default function Home() {
   const router = useRouter();
@@ -52,6 +53,7 @@ export default function Home() {
 
   const reward = rewardState(p);
   const rewardXp = rewardFor(p.streak);
+  const dueCount = dueItems(language, p.reviews).length;
   const openReward = () => {
     if (claiming || reward !== 'ready') return;
     setClaiming(true);
@@ -117,6 +119,28 @@ export default function Home() {
               : reward === 'claimed'
                 ? `+${rewardXp} XP resgatado`
                 : 'Estude hoje para abrir'}
+          </Text>
+        </View>
+      </Pressable>
+
+      <Pressable
+        accessibilityRole="button"
+        accessibilityState={{ disabled: dueCount === 0 }}
+        accessibilityLabel={
+          dueCount === 0
+            ? 'Revisão: nada vencido agora'
+            : `Revisar ${dueCount} exercício${dueCount > 1 ? 's' : ''} vencido${dueCount > 1 ? 's' : ''}`
+        }
+        disabled={dueCount === 0}
+        onPress={() => router.push(`/review/${language}`)}
+        style={[styles.reward, dueCount > 0 && styles.reviewReady]}>
+        <Text style={styles.rewardIcon}>{dueCount > 0 ? '🔁' : '✅'}</Text>
+        <View style={styles.rewardText}>
+          <Text style={styles.rewardTitle}>Revisão</Text>
+          <Text style={[styles.rewardSub, dueCount > 0 && styles.rewardSubReady]}>
+            {dueCount > 0
+              ? `${dueCount} exercício${dueCount > 1 ? 's' : ''} para treinar de novo`
+              : 'Tudo em dia'}
           </Text>
         </View>
       </Pressable>
@@ -222,6 +246,7 @@ const styles = StyleSheet.create({
     padding: 14,
   },
   rewardReady: { backgroundColor: '#2a2142', borderColor: INK.gold },
+  reviewReady: { backgroundColor: '#2a2142', borderColor: INK.violet },
   rewardIcon: { fontSize: 28 },
   rewardText: { flex: 1, gap: 2 },
   rewardTitle: { color: INK.text, fontSize: 16, fontWeight: '700' },

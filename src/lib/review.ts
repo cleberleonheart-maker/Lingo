@@ -41,3 +41,12 @@ export function applyAnswer(
 export function isDueAt(review: Review | undefined, now: number): boolean {
   return review !== undefined && review.due <= now;
 }
+
+/**
+ * Chave de revisão de um exercício dentro da lição/prova (`container#exercise`).
+ * O mesmo id de exercício pode existir em lições diferentes, então a chave
+ * sempre precisa do container.
+ */
+export function reviewKey(containerId: string, exerciseId: string): string {
+  return `${containerId}#${exerciseId}`;
+}

@@ -16,6 +16,7 @@ export default function RootLayout() {
         <Stack.Screen name="(tabs)" />
         <Stack.Screen name="lesson/[id]" />
         <Stack.Screen name="exam/[id]" />
+        <Stack.Screen name="review/[id]" />
         <Stack.Screen name="result" />
       </Stack>
     </>

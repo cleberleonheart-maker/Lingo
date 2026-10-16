@@ -1,7 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 
-import { applyAnswer, isDueAt, REVIEW_STEPS, type Review } from '@/lib/review';
+import { applyAnswer, isDueAt, reviewKey, REVIEW_STEPS, type Review } from '@/lib/review';
 
 const NOW = 1_000_000;
 
@@ -47,4 +47,10 @@ test('isDueAt respeita o vencimento', () => {
   assert.equal(isDueAt({ step: 0, due: NOW }, NOW), true);
   assert.equal(isDueAt({ step: 0, due: NOW - 1 }, NOW), true);
   assert.equal(isDueAt({ step: 0, due: NOW + 1 }, NOW), false);
+});
+
+test('reviewKey junta container e exercício', () => {
+  assert.equal(reviewKey('en-u1-l1', 'e1'), 'en-u1-l1#e1');
+  // O mesmo id em containers diferentes não colide.
+  assert.notEqual(reviewKey('en-u1-l2', 'e1'), reviewKey('en-u1-l3', 'e1'));
 });

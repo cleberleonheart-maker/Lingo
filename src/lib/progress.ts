@@ -3,7 +3,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { applyAnswer, isDueAt, type Review } from '@/lib/review';
 import { canClaimReward, rewardFor } from '@/lib/reward';
 
-export { REVIEW_STEPS } from '@/lib/review';
+export { REVIEW_STEPS, reviewKey } from '@/lib/review';
 export type { Review } from '@/lib/review';
 export { REWARD_BASE, REWARD_MAX, REWARD_PER_STREAK, rewardFor } from '@/lib/reward';
 
@@ -200,11 +200,6 @@ export function isLessonDone(progress: Progress, lessonId: string) {
 
 export function isExamDone(progress: Progress, examId: string) {
   return progress.exams.includes(examId);
-}
-
-/** Chave de revisão de um exercício dentro da lição/prova (`container#exercise`). */
-export function reviewKey(containerId: string, exerciseId: string) {
-  return `${containerId}#${exerciseId}`;
 }
 
 /** A revisão está vencida (ou nunca feita)? */

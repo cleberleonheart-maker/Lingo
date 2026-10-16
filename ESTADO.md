@@ -362,6 +362,36 @@ Sem mudança de comportamento visível: o que era sorteado (o `pool`) continua
 sendo; some só o dado duplicado/morto. `tsc` limpo, `npm test` **31/31**, lint
 sem erros.
 
+## Tela de revisão (2026-10-16)
+
+A repetição espaçada existia, mas só aparecia se a pessoa reabrisse a lição
+(o `buildSession` põe os vencidos na frente do sorteio). Agora tem um lugar
+próprio, que junta os vencidos de todas as lições **e provas** do idioma.
+
+- **`src/lib/review-queue.ts`** — `dueItems(language, reviews, now)` devolve
+  `{ containerId, exercise }[]` de tudo que venceu. Pura (recebe `reviews` e
+  `now`), coberta por `test/review-queue.test.ts`. Percorre lições e a prova de
+  cada unidade; só entra o que **já tem** revisão agendada (`isDueAt` devolve
+  `false` para revisão inexistente, então nunca foi respondido = não vence).
+- **`reviewKey` mudou de casa** — saiu de `progress.ts` para `review.ts` (é
+  pura), e `progress.ts` reexporta. Assim a fila de revisão não precisa importar
+  `progress.ts` (que carrega `AsyncStorage`) só para montar a chave.
+- **`src/app/review/[id].tsx`** — roda o mesmo `ExercisePlayer`. O id de cada
+  item da sessão vira a **própria chave de revisão** (`container#exercise`), que
+  é única entre lições/provas; assim o `onResult` reagenda sem precisar carregar
+  de volta de qual lição era. A sessão embaralha e corta em 20 itens
+  (`REVIEW_MAX`) para não virar uma lição sem fim.
+- **Terminar a revisão credita XP** (`addXp(correct * XP_PER_CORRECT)`, que
+  também marca o dia para o streak), mas **não** conclui lição nem prova. Morrer
+  no meio credita o XP parcial, igual às lições. Tela vazia (nada vencido) tem um
+  "Nada para revisar agora" + botão de volta.
+- **Card no mapa** — ao lado da recompensa: mostra "N revisão(ões) para treinar
+  de novo" e fica destacado (borda violeta) quando há item vencido; com tudo em
+  dia, aparece apagado ("Tudo em dia"). Rota registrada no `Stack` raiz.
+
+`tsc` limpo, `npm test` **36/36**, lint sem erros. Como o resto da UI, **não foi
+validado em dispositivo**; o que dá para garantir é a fila (testes) e o tipo.
+
 ## Validador de conteúdo
 
 Mora no repo: `src/lib/validate-content.ts` (`findContentProblems()`), coberto
