@@ -81,10 +81,11 @@ em checagem de tipo; só aparece quando alguém faz a lição e olha o resultado
 
 ## Pendências
 
-- `package-lock.json` já foi revisto (ver seção própria): **555 dependências de
-  produção sem `resolved`/`integrity`** e binários por plataforma desalinhados.
-  Consertar exige regenerar o lock com Node ≥ 22.13 — ver os três motivos em
-  que não foi feito.
+- **Binários por plataforma no `package-lock.json`** — a anomalia 2 da seção
+  própria: o lock grava só o binário arm64 de `lightningcss` e deixa de fora 59
+  nós (outras plataformas + a sub-árvore WASM). Não quebra nada hoje
+  (`lightningcss` funciona via fallback, testado); consertar exige adicionar
+  dezenas de entradas `optionalDependencies`.
 - Áudio do japonês depende de voz instalada no `expo-speech`; não confirmado em
   hardware real.
 - Lições 2 embaralham, mas o banco continua com os mesmos 6 itens (não há
@@ -413,9 +414,8 @@ Pendência fechada: análise linha a linha do lockfile e do `node_modules`.
 - **O lock bate exatamente com o `package.json`**: `packages[""]`
   `dependencies`/`devDependencies` idênticos (`0` de diferença) e
   name/version iguais. As 31 diretas têm versão do lock = versão instalada.
-- **`resolved` limpos**: os 373 que existem apontam todos para
-  `registry.npmjs.org` — `0` fora de lá, `0` sem `integrity`, `0` com
-  `file:`/`link:`/`git:`.
+- **`resolved` limpos**: os 928 apontam todos para `registry.npmjs.org` — `0`
+  fora de lá, `0` sem `integrity`, `0` com `file:`/`link:`/`git:`.
 - `npm ls` e `npm ls --depth=0` saem com **exit 0** (sem `missing`,
   `invalid` ou `extraneous`).
 - `npm install --dry-run` **não** reescreve o lock (git continua limpo).
@@ -429,17 +429,17 @@ Pendência fechada: análise linha a linha do lockfile e do `node_modules`.
 - `npm audit`: 32 (11 moderate, 20 high, 1 critical), todos transitivos do
   toolchain de build — já conhecido; `npm audit fix --force` não vale a pena.
 
-### Duas anomalias reais
+### Duas anomalias — uma delas consertada em 2026-10-16
 
-1. **555 dos 928 nós estão sem `resolved` e sem `integrity`** — e são
-   justamente as 555 **de produção**; as 373 com `resolved` são todas
-   `dev`/`optional`. Não é um config atual (`omit-lockfile-registry-resolved`
+1. **555 dos 928 nós estavam sem `resolved` e sem `integrity`** — eram
+   justamente as 555 **de produção**; as 373 com `resolved` eram todas
+   `dev`/`optional`. Não era config atual (`omit-lockfile-registry-resolved`
    está `false`), nem corrupção: o lockfile oculto do `node_modules` omite
-   **os mesmos 555**. Ou seja, o arquivo nasceu assim (outra passada de npm, ou
-   outra máquina). *Consequência*: para as dependências que vão para o app, o
-   lockfile não fixa o hash do tarball — `npm ci` re-deriva a URL do registry e
-   **não verifica offline o byte exato**. Instala, mas com proteção de
-   supply-chain mais fraca do que deveria.
+   **os mesmos 555**, então o arquivo nasceu assim (outra passada de npm, ou
+   outra máquina). *Consequência*: nas dependências que vão para o app o lock
+   não fixava o hash do tarball — `npm ci` re-deriva a URL do registry e
+   **não verifica offline o byte exato**. **Consertado**, ver seção própria
+   abaixo.
 2. **Binários por plataforma desalinhados com este ambiente** — `lightningcss`
    (que vem do `@expo/metro-config`) declara **11** binários em
    `optionalDependencies`; o lockfile grava **só** `lightningcss-linux-arm64-gnu`
@@ -450,16 +450,40 @@ Pendência fechada: análise linha a linha do lockfile e do `node_modules`.
    binários de arm64 num ambiente x64 sugere que ele foi gerado **noutro
    aparelho** (provavelmente o Chromebook).
 
-**Nada disso quebra hoje** — `npm ls` não reclama, `npm ci` passa no CI, o
+**Nada disso quebra** — `npm ls` não reclama, `npm ci` passa no CI, o
 `esbuild` roda (0.28.2, transform ok) e o `lightningcss.transform` também carrega
 e funciona via fallback, mesmo sem nenhum binário nativo instalado.
 
-**Como consertar (não feito de propósito):** regenerar o lock num ambiente com
-**Node ≥ 22.13 e rede confiável**, com `npm install --package-lock-only`,
-repor `resolved`/`integrity` nas 555 e reconciliar os binários por plataforma.
-Não fiz agora por três motivos: (a) aqui só há Node 18; (b) re-resolver tudo
-dentro das faixas pode trocar versões transitivas e **mexer nos pins do Expo
-SDK 57**; (c) é uma mudança grande, difícil de validar sem poder rodar o app.
+### Conserto da anomalia 1 (2026-10-16)
+
+Em vez de regenerar o lock inteiro (`npm install --package-lock-only`), que
+re-resolveria tudo dentro das faixas e podia **trocar versões transitivas e
+mexer nos pins do Expo SDK 57** — impossível de validar sem rodar o app —, a
+correção foi **cirúrgica**: as 555 entradas receberam `resolved` e `integrity`
+com os valores do **próprio registry npm**, a mesma fonte que o npm consultaria,
+e **nenhuma versão foi tocada**.
+
+Verificações que passaram antes de subir:
+
+- **Proteção de escrita** — o script só seguia se o `JSON.stringify(lock, null, 2)`
+  reproduzia o lock original **byte a byte**; assim a única mudança possível era
+  o campo acrescentado. O diff final tem **1110 linhas, todas de acréscimo**
+  (555 × 2 campos), zero remoção.
+- **Comparação com o lock do `HEAD`** — mesmas 929 chaves, **0 versões
+  alteradas**, **0 entradas com mudança fora de `resolved`/`integrity`**.
+- **Cobertura e sanidade** — 928 nós com `resolved` **e** `integrity`, todos em
+  `registry.npmjs.org`, todos os `integrity` em formato `sha512-…`.
+- **13 tarballs baixados e o sha512 conferido contra o `integrity` gravado**
+  (scopado, aninhado, opcional de plataforma e pacote antigo) — 13/13.
+- `npm ls` exit 0, `tsc --noEmit` limpo, lint 0, 39/39 testes.
+
+O `npm ci` do CI (Node 22/linux-x64) fecha o ciclo: baixa tudo do lock e confere
+o hash de cada pacote — algum valor errado daria `EINTEGRITY` e deixaria o CI
+vermelho.
+
+**A anomalia 2 segue aberta**: consertá-la exigiria dezenas de entradas
+`optionalDependencies` de outras plataformas, e o `lightningcss` já funciona via
+fallback (testado).
 
 ## Lições 2 e provas embaralhadas (2026-10-16)
 
