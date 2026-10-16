@@ -11,12 +11,6 @@ export const DE: Unit = {
       subtitle: 'hallo, guten tag',
       perSession: 10,
       exercises: [
-        { kind: 'choice', id: 'e1', prompt: 'Como você diz "boa noite" em alemão?', answer: 'c', options: [{ id: 'a', text: 'guten Morgen' }, { id: 'b', text: 'guten Tag' }, { id: 'c', text: 'gute Nacht' }, { id: 'd', text: 'tschüss' }] },
-        { kind: 'translate', id: 'e2', from: 'Oi!', accept: ['hallo', 'hi'] },
-        { kind: 'listen', id: 'e3', speak: 'Guten Tag', accept: ['guten tag'] },
-        { kind: 'fill', id: 'e4', before: 'Gute ', after: '!', answer: 'Nacht', accept: ['Nacht', 'nacht'] },
-      ],
-      pool: [
         { kind: 'choice', id: 'p1', prompt: 'Como você diz "boa noite" em alemão?', answer: 'c', options: [{ id: 'a', text: 'guten Morgen' }, { id: 'b', text: 'guten Tag' }, { id: 'c', text: 'gute Nacht' }, { id: 'd', text: 'tschüss' }] },
         { kind: 'choice', id: 'p2', prompt: 'E "adeus"?', answer: 'a', options: [{ id: 'a', text: 'auf Wiedersehen' }, { id: 'b', text: 'guten Morgen' }, { id: 'c', text: 'bitte' }, { id: 'd', text: 'vielen Dank' }] },
         { kind: 'choice', id: 'p3', prompt: 'E "muito obrigado"?', answer: 'b', options: [{ id: 'a', text: 'danke schön' }, { id: 'b', text: 'vielen Dank' }, { id: 'c', text: 'bitte' }, { id: 'd', text: 'gute Nacht' }] },
@@ -69,11 +63,6 @@ export const DE: Unit = {
       subtitle: 'Land und Sprache',
       perSession: 10,
       exercises: [
-        { kind: 'fill', id: 'e1', before: 'Ich komme ', after: ' Deutschland.', answer: 'aus', accept: ['aus'] },
-        { kind: 'choice', id: 'e2', prompt: 'O que "Ich komme aus Brasilien" quer dizer?', answer: 'b', options: [{ id: 'a', text: 'Ich heiße Ana' }, { id: 'b', text: 'Eu venho do Brasil' }, { id: 'c', text: 'Eu vou para o Brasil' }] },
-        { kind: 'listen', id: 'e3', speak: 'Ich komme aus Brasilien', accept: ['ich komme aus brasilien'] },
-      ],
-      pool: [
         { kind: 'fill', id: 'p1', before: 'Ich komme ', after: ' Deutschland.', answer: 'aus', accept: ['aus'] },
         { kind: 'fill', id: 'p2', before: 'Ich komme aus ', after: '.', answer: 'Deutschland', accept: ['deutschland'] },
         { kind: 'choice', id: 'p3', prompt: 'Como se pergunta "de onde você vem"?', answer: 'a', options: [{ id: 'a', text: 'Woher kommst du?' }, { id: 'b', text: 'Wie geht es dir?' }, { id: 'c', text: 'Was kostet das?' }] },
@@ -92,6 +81,7 @@ export const DE: Unit = {
             { left: 'ich', right: 'eu' },
           ],
         },
+        { kind: 'choice', id: 'p11', prompt: 'O que "Ich komme aus Brasilien" quer dizer?', answer: 'b', options: [{ id: 'a', text: 'Ich heiße Ana' }, { id: 'b', text: 'Eu venho do Brasil' }, { id: 'c', text: 'Eu vou para o Brasil' }] },
       ],
     },
   ],

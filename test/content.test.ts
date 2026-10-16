@@ -2,7 +2,6 @@ import assert from 'node:assert/strict';
 import { test } from 'node:test';
 
 import {
-  allExercises,
   checkAnswer,
   COURSES,
   drawSession,
@@ -59,26 +58,24 @@ test('checkAnswer em match é sempre falso (avaliado por pares)', () => {
   assert.equal(checkAnswer(ex, 'b'), false);
 });
 
-test('drawSession respeita perSession e sorteia dentro do pool', () => {
-  const pool = Array.from({ length: 12 }, (_, i) => fill(`p${i}`));
-  const lesson = { id: 'x', title: '', subtitle: '', exercises: pool.slice(0, 3), pool, perSession: 10 };
+test('drawSession com perSession sorteia essa quantidade do banco', () => {
+  const exercises = Array.from({ length: 12 }, (_, i) => fill(`e${i}`));
+  const lesson = { id: 'x', title: '', subtitle: '', exercises, perSession: 10 };
   const session = drawSession(lesson);
   assert.equal(session.length, 10);
-  assert.ok(session.every((e) => pool.includes(e)));
+  assert.ok(session.every((e) => exercises.includes(e)));
+  assert.equal(new Set(session.map((e) => e.id)).size, 10, 'sorteou exercício repetido');
 });
 
-test('drawSession sem pool devolve os exercícios fixos', () => {
-  const exercises = [fill('e1')];
+test('drawSession sem perSession devolve os exercícios na ordem', () => {
+  const exercises = [fill('e1'), fill('e2'), fill('e3')];
   const lesson = { id: 'x', title: '', subtitle: '', exercises };
   assert.deepEqual(drawSession(lesson), exercises);
 });
 
-test('allExercises une fixos e pool', () => {
-  const lesson = { id: 'x', title: '', subtitle: '', exercises: [fill('e1')], pool: [fill('p1')] };
-  assert.deepEqual(
-    allExercises(lesson).map((e) => e.id),
-    ['e1', 'p1']
-  );
+test('drawSession não sorteia mais que o banco', () => {
+  const lesson = { id: 'x', title: '', subtitle: '', exercises: [fill('e1')], perSession: 8 };
+  assert.equal(drawSession(lesson).length, 1);
 });
 
 test('getLesson e getExam acham por id e devolvem undefined quando não existe', () => {
@@ -98,7 +95,7 @@ test('todo curso tem lições, provas e ids de exercício únicos por lição', 
     }
     for (const lesson of lessons) {
       assert.ok(lesson.exercises.length > 0, `${lesson.id} sem exercícios`);
-      const ids = allExercises(lesson).map((e) => e.id);
+      const ids = lesson.exercises.map((e) => e.id);
       assert.equal(new Set(ids).size, ids.length, `${lesson.id} tem ids repetidos`);
     }
   }

@@ -15,12 +15,6 @@ export const JA: Unit = {
       subtitle: 'ohayou gozaimasu',
       perSession: 10,
       exercises: [
-        { kind: 'choice', id: 'e1', prompt: 'Qual destas frases significa "bom dia"?', answer: 'b', options: [{ id: 'a', text: 'こんばんは' }, { id: 'b', text: 'おはようございます' }, { id: 'c', text: 'さようなら' }] },
-        { kind: 'translate', label: 'leia em romaji: kana -> teclado', id: 'e2', from: 'こんにちは', accept: ['konnichiwa'] },
-        { kind: 'listen', id: 'e3', speak: 'こんばんは', accept: ['konbanwa'] },
-        { kind: 'fill', id: 'e4', before: 'ohayou ', after: '!', answer: 'gozaimasu', accept: ['gozaimasu'] },
-      ],
-      pool: [
         { kind: 'choice', id: 'p1', prompt: 'Qual destas frases significa "bom dia"?', answer: 'b', options: [{ id: 'a', text: 'こんばんは' }, { id: 'b', text: 'おはようございます' }, { id: 'c', text: 'さようなら' }] },
         { kind: 'choice', id: 'p2', prompt: '「こんばんは」はいつ使いますか?|Quando se usa "konbanwa"?', answer: 'b', options: [{ id: 'a', text: '朝 (manhã)' }, { id: 'b', text: '夕方・夜 (noite)' }, { id: 'c', text: 'お昼 (tarde)' }] },
         { kind: 'choice', id: 'p3', prompt: '「ありがとうございます」は何の挨拶?|O que "arigatou gozaimasu" é?', answer: 'c', options: [{ id: 'a', text: 'さようなら (adeus)' }, { id: 'b', text: 'こんにちは (olá)' }, { id: 'c', text: 'ありがとう (obrigado)' }] },
@@ -43,6 +37,7 @@ export const JA: Unit = {
             { left: 'ohayou', right: 'おはよう' },
           ],
         },
+        { kind: 'listen', id: 'p14', speak: 'こんばんは', accept: ['konbanwa'] },
       ],
     },
     {
@@ -73,11 +68,6 @@ export const JA: Unit = {
       subtitle: 'wa doko kara',
       perSession: 10,
       exercises: [
-        { kind: 'fill', id: 'e1', before: 'わたしは', after: 'からです。', answer: 'burajiru', accept: ['burajiru'] },
-        { kind: 'choice', id: 'e2', prompt: '「わたしはブラジルからです」は?|O que "watashi wa burajiru kara desu" quer dizer?', answer: 'b', options: [{ id: 'a', text: 'わたしはアナです (me chamo Ana)' }, { id: 'b', text: 'ブラジルから来ました (vim do Brasil)' }, { id: 'c', text: 'ブラジルへ行きます (vou ao Brasil)' }] },
-        { kind: 'listen', id: 'e3', speak: 'わたしはブラジルからです', accept: ['watashi wa burajiru kara desu'] },
-      ],
-      pool: [
         { kind: 'fill', id: 'p1', before: 'わたしは', after: 'からです。', answer: 'burajiru', accept: ['burajiru'] },
         { kind: 'fill', id: 'p2', before: 'わたしは', after: 'にすみます。', answer: 'tokyo', accept: ['tokyo', 'toukyou', 'tokio'] },
         { kind: 'choice', id: 'p3', prompt: '「わたしはブラジルからです」は?|O que "watashi wa burajiru kara desu" quer dizer?', answer: 'b', options: [{ id: 'a', text: 'わたしはアナです (me chamo Ana)' }, { id: 'b', text: 'ブラジルから来ました (vim do Brasil)' }, { id: 'c', text: 'ブラジルへ行きます (vou ao Brasil)' }] },

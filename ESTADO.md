@@ -28,11 +28,12 @@ exercício (`choice`, `translate`, `fill`, `match`, `listen`). 198 exercícios n
 total. Inglês em `src/constants/content.ts`; os outros 5 em `content-es.ts`,
 `content-fr.ts`, `content-de.ts`, `content-it.ts` e `content-ja.ts`.
 
-**Lições sorteiam de um banco** — `pool` + `perSession`: as lições 1 e 3 de cada
-idioma sorteiam 10 exercícios de um banco de 10-14 em vez de repetir uma
-sequência fixa. O sorteio acontece na abertura da tela (`drawSession`), não
-dentro do `ExercisePlayer`, senão a ordem mudaria a cada re-render e o `index`
-pararia de bater.
+**Lições sorteiam de um banco** — `perSession`: as lições 1 e 3 de cada idioma
+têm `exercises` com 10-14 itens e sorteiam 10 (`drawSession`) em vez de repetir
+uma sequência fixa; sem `perSession`, os exercícios saem na ordem escrita. O
+sorteio acontece na abertura da tela (`drawSession`), não dentro do
+`ExercisePlayer`, senão a ordem mudaria a cada re-render e o `index` pararia de
+bater.
 
 **Progresso (`src/lib/progress.ts`)** — AsyncStorage, com streak e
 `streakBest`. `touchStudy` só avança o streak se for o dia seguinte.
@@ -80,8 +81,7 @@ em checagem de tipo; só aparece quando alguém faz a lição e olha o resultado
 
 ## Pendências
 
-- Lições 2 e as provas ainda são fixas (sem `pool`).
-- `exercises` e `pool` duplicam o mesmo conteúdo; `drawSession` só usa o `pool`.
+- Lições 2 e as provas ainda são fixas (sem `perSession`).
 - `package-lock.json` é novo e nunca foi revisado.
 - Áudio do japonês depende de voz instalada no `expo-speech`; não confirmado em
   hardware real.
@@ -335,15 +335,42 @@ Continua sendo mudança visual: **não validada em dispositivo**, só no tipo/li
 Como os humores do avatar, isto é sobretudo UI: o que dá para garantir é a
 lógica pura (testes) e o tipo; **a aparência não foi validada em dispositivo**.
 
+## Limpeza do modelo de conteúdo (2026-10-16)
+
+O modelo tinha dois arrays por lição: `exercises` (a "ordem canônica") e `pool`
+(o banco). Mas o `drawSession` só usava o `pool` quando ele existia, então, nas
+lições sorteáveis, o `exercises` **nunca era apresentado** — só alimentava a
+revisão espaçada (`allExercises`), gerando dois itens de revisão para a mesma
+pergunta (um com id `e…`, outro com id `p…`). Boa parte do `exercises` era
+duplicata exata do `pool`.
+
+- **`pool` removido** — a lição agora tem só `exercises` (o banco) e, quando
+  quer sorteio, `perSession`. `drawSession` embaralha `exercises` e pega
+  `perSession`; sem `perSession`, usa `exercises` na ordem. `allExercises` sumiu
+  (virou `lesson.exercises`, usado direto no `buildSession`).
+- **Conteúdo fundido** — em cada lição sorteável, o `pool` virou o `exercises` e
+  o array antigo saiu. Os 6 exercícios que **não** eram duplicata foram
+  preservados: o `hint` do `en-u1-l1` foi para o `p4`; entraram como item novo o
+  `listen` "Buenas noches" (`es-u1-l1` `p14`), o `translate` "Oi!"
+  (`fr-u1-l1` `p14`), o `choice` de significado do `de-u1-l3` (`p11`) e do
+  `it-u1-l3` (`p11`), e o `listen` `こんばんは` (`ja-u1-l1` `p14`).
+- **Validador ganho uma regra** — exercícios de mesmo conteúdo na mesma lição
+  (id zerado na comparação) são reportados. É o que garante que a fusão não
+  deixou repetido; segue **0 problemas** nos 6 idiomas.
+
+Sem mudança de comportamento visível: o que era sorteado (o `pool`) continua
+sendo; some só o dado duplicado/morto. `tsc` limpo, `npm test` **31/31**, lint
+sem erros.
+
 ## Validador de conteúdo
 
 Mora no repo: `src/lib/validate-content.ts` (`findContentProblems()`), coberto
 por `test/validator.test.ts` e rodando no `npm test`. Checa o que o typecheck não
 pega: opção correta dentro do próprio enunciado, `fill` com resposta vazia,
 `translate` com `from` do mesmo idioma da resposta, coluna de `match` repetida,
-banco menor que a sessão (`perSession > pool`), ids duplicados e varredura de
-caractere de outro alfabeto. As regras 1 e 2 acima foram escritas a partir dos
-bugs que ele achou.
+banco menor que a sessão (`perSession > exercícios`), ids duplicados, exercícios
+de mesmo conteúdo na mesma lição e varredura de caractere de outro alfabeto. As
+regras 1 e 2 acima foram escritas a partir dos bugs que ele achou.
 
 A versão anterior era um script solto em `/tmp/opencode/validate-content.cjs` —
 fora do repo, perdível, e que **não validava as provas**: chamava

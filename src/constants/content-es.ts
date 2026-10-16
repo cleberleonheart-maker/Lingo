@@ -11,12 +11,6 @@ export const ES: Unit = {
       subtitle: 'hola, buenos días',
       perSession: 10,
       exercises: [
-        { kind: 'choice', id: 'e1', prompt: 'Como você diz "bom dia" em espanhol?', answer: 'b', options: [{ id: 'a', text: 'buenas noches' }, { id: 'b', text: 'buenos días' }, { id: 'c', text: 'adiós' }, { id: 'd', text: 'gracias' }] },
-        { kind: 'translate', id: 'e2', from: 'Olá!', accept: ['hola'] },
-        { kind: 'listen', id: 'e3', speak: 'Buenas noches', accept: ['buenas noches'] },
-        { kind: 'fill', id: 'e4', before: 'Buenos ', after: '!', answer: 'días', accept: ['días', 'dias'] },
-      ],
-      pool: [
         { kind: 'choice', id: 'p1', prompt: 'Como você diz "bom dia" em espanhol?', answer: 'b', options: [{ id: 'a', text: 'buenas noches' }, { id: 'b', text: 'buenos días' }, { id: 'c', text: 'adiós' }, { id: 'd', text: 'gracias' }] },
         { kind: 'choice', id: 'p2', prompt: 'E "boa noite"?', answer: 'a', options: [{ id: 'a', text: 'buenas noches' }, { id: 'b', text: 'buenos días' }, { id: 'c', text: 'hasta luego' }, { id: 'd', text: 'por favor' }] },
         { kind: 'choice', id: 'p3', prompt: 'E "até logo"?', answer: 'c', options: [{ id: 'a', text: 'buenos días' }, { id: 'b', text: 'buenas noches' }, { id: 'c', text: 'hasta luego' }, { id: 'd', text: 'muchas gracias' }] },
@@ -39,6 +33,7 @@ export const ES: Unit = {
             { left: 'Por favor', right: 'Por favor' },
           ],
         },
+        { kind: 'listen', id: 'p14', speak: 'Buenas noches', accept: ['buenas noches'] },
       ],
     },
     {
@@ -69,11 +64,6 @@ export const ES: Unit = {
       subtitle: 'país e idioma',
       perSession: 10,
       exercises: [
-        { kind: 'fill', id: 'e1', before: 'Soy ', after: ' Brasil.', answer: 'de', accept: ['de'] },
-        { kind: 'choice', id: 'e2', prompt: '"Soy de Brasil" significa…?', answer: 'b', options: [{ id: 'a', text: 'Soy Ana' }, { id: 'b', text: 'Vengo de Brasil' }, { id: 'c', text: 'Vivo en Brasil' }] },
-        { kind: 'listen', id: 'e3', speak: 'Soy de Brasil', accept: ['soy de brasil'] },
-      ],
-      pool: [
         { kind: 'fill', id: 'p1', before: 'Soy ', after: ' Brasil.', answer: 'de', accept: ['de'] },
         { kind: 'fill', id: 'p2', before: 'Soy de ', after: '.', answer: 'Brasil', accept: ['brasil'] },
         { kind: 'choice', id: 'p3', prompt: '"Soy de Brasil" significa…?', answer: 'b', options: [{ id: 'a', text: 'Soy Ana' }, { id: 'b', text: 'Vengo de Brasil' }, { id: 'c', text: 'Vivo en Brasil' }] },

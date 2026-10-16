@@ -11,12 +11,6 @@ export const IT: Unit = {
       subtitle: 'ciao, buongiorno',
       perSession: 10,
       exercises: [
-        { kind: 'choice', id: 'e1', prompt: 'Como você diz "boa noite" em italiano?', answer: 'c', options: [{ id: 'a', text: 'buongiorno' }, { id: 'b', text: 'buonasera' }, { id: 'c', text: 'buonanotte' }, { id: 'd', text: 'arrivederci' }] },
-        { kind: 'translate', id: 'e2', from: 'Oi!', accept: ['ciao'] },
-        { kind: 'listen', id: 'e3', speak: 'Buongiorno', accept: ['buongiorno'] },
-        { kind: 'fill', id: 'e4', before: 'Buona ', after: '!', answer: 'notte', accept: ['notte'] },
-      ],
-      pool: [
         { kind: 'choice', id: 'p1', prompt: 'Como você diz "boa noite" em italiano?', answer: 'c', options: [{ id: 'a', text: 'buongiorno' }, { id: 'b', text: 'buonasera' }, { id: 'c', text: 'buonanotte' }, { id: 'd', text: 'arrivederci' }] },
         { kind: 'choice', id: 'p2', prompt: 'E "adeus"?', answer: 'a', options: [{ id: 'a', text: 'arrivederci' }, { id: 'b', text: 'buongiorno' }, { id: 'c', text: 'per favore' }, { id: 'd', text: 'molte grazie' }] },
         { kind: 'choice', id: 'p3', prompt: 'E "por favor"?', answer: 'b', options: [{ id: 'a', text: 'grazie' }, { id: 'b', text: 'per favore' }, { id: 'c', text: 'arrivederci' }, { id: 'd', text: 'buonanotte' }] },
@@ -69,11 +63,6 @@ export const IT: Unit = {
       subtitle: 'paese e lingua',
       perSession: 10,
       exercises: [
-        { kind: 'fill', id: 'e1', before: 'Vengo ', after: ' Brasile.', answer: 'dal', accept: ['dal', 'da'] },
-        { kind: 'choice', id: 'e2', prompt: 'O que "Vengo dal Brasile" quer dizer?', answer: 'b', options: [{ id: 'a', text: 'Mi chiamo Ana' }, { id: 'b', text: 'Eu venho do Brasil' }, { id: 'c', text: 'Eu vou para o Brasil' }] },
-        { kind: 'listen', id: 'e3', speak: 'Vengo dal Brasile', accept: ['vengo dal brasil'] },
-      ],
-      pool: [
         { kind: 'fill', id: 'p1', before: 'Vengo ', after: ' Brasile.', answer: 'dal', accept: ['dal', 'da'] },
         { kind: 'fill', id: 'p2', before: 'Vengo ', after: ' Francia.', answer: 'dalla', accept: ['dalla', 'da'] },
         { kind: 'choice', id: 'p3', prompt: 'Como se pergunta "de onde você é"?', answer: 'a', options: [{ id: 'a', text: 'Di dove sei?' }, { id: 'b', text: 'Come stai?' }, { id: 'c', text: 'Quanto costa?' }] },
@@ -92,6 +81,7 @@ export const IT: Unit = {
             { left: 'io', right: 'eu' },
           ],
         },
+        { kind: 'choice', id: 'p11', prompt: 'O que "Vengo dal Brasile" quer dizer?', answer: 'b', options: [{ id: 'a', text: 'Mi chiamo Ana' }, { id: 'b', text: 'Eu venho do Brasil' }, { id: 'c', text: 'Eu vou para o Brasil' }] },
       ],
     },
   ],

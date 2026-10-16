@@ -127,13 +127,15 @@ export function findContentProblems(): string[] {
     for (const unit of course.units) {
       for (const lesson of unit.lessons) {
         const where = `${lesson.id}`;
-        const ids = [...lesson.exercises, ...(lesson.pool || [])].map((e) => e.id);
+        const ids = lesson.exercises.map((e) => e.id);
         if (new Set(ids).size !== ids.length) err(file, where, 'ids duplicados');
-        if (lesson.pool) {
-          if ((lesson.perSession ?? 8) > lesson.pool.length)
-            err(file, where, `perSession (${lesson.perSession}) > pool (${lesson.pool.length})`);
-          lesson.pool.forEach((e, i) => checkEx(e, `${where} pool[${i}]`, file));
-        }
+        if (lesson.perSession && lesson.perSession > lesson.exercises.length)
+          err(file, where, `perSession (${lesson.perSession}) > exercícios (${lesson.exercises.length})`);
+        // Mesmo conteúdo com id diferente infla a revisão espaçada (dois itens
+        // para a mesma pergunta). O id entra zerado para comparar só o conteúdo.
+        const sigs = lesson.exercises.map((e) => JSON.stringify({ ...e, id: '' }));
+        if (new Set(sigs).size !== sigs.length)
+          err(file, where, 'exercícios repetidos (mesmo conteúdo)');
         lesson.exercises.forEach((e, i) => checkEx(e, `${where} ex[${i}]`, file));
       }
       if (unit.exam) {

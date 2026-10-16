@@ -11,12 +11,6 @@ export const FR: Unit = {
       subtitle: 'bonjour, bonsoir',
       perSession: 10,
       exercises: [
-        { kind: 'choice', id: 'e1', prompt: 'Como você diz "boa noite" em francês?', answer: 'c', options: [{ id: 'a', text: 'bonjour' }, { id: 'b', text: 'bonne soirée' }, { id: 'c', text: 'bonne nuit' }, { id: 'd', text: 'adieu' }] },
-        { kind: 'translate', id: 'e2', from: 'Oi!', accept: ['salut', 'bonjour', 'coucou'] },
-        { kind: 'listen', id: 'e3', speak: 'Bonsoir', accept: ['bonsoir'] },
-        { kind: 'fill', id: 'e4', before: 'Bonne ', after: ' !', answer: 'nuit', accept: ['nuit'] },
-      ],
-      pool: [
         { kind: 'choice', id: 'p1', prompt: 'Como você diz "boa noite" em francês?', answer: 'c', options: [{ id: 'a', text: 'bonjour' }, { id: 'b', text: 'bonne soirée' }, { id: 'c', text: 'bonne nuit' }, { id: 'd', text: 'adieu' }] },
         { kind: 'choice', id: 'p2', prompt: 'E "boa tarde"?', answer: 'b', options: [{ id: 'a', text: 'bonne nuit' }, { id: 'b', text: 'bonsoir' }, { id: 'c', text: 'bonjour' }, { id: 'd', text: 'merci' }] },
         { kind: 'choice', id: 'p3', prompt: 'E "adeus"?', answer: 'a', options: [{ id: 'a', text: 'au revoir' }, { id: 'b', text: 'bonsoir' }, { id: 'c', text: 'merci' }, { id: 'd', text: "s'il vous plaît" }] },
@@ -39,6 +33,7 @@ export const FR: Unit = {
             { left: "S'il vous plaît", right: 'Por favor' },
           ],
         },
+        { kind: 'translate', id: 'p14', from: 'Oi!', accept: ['salut', 'bonjour', 'coucou'] },
       ],
     },
     {
@@ -69,11 +64,6 @@ export const FR: Unit = {
       subtitle: 'pays et langue',
       perSession: 10,
       exercises: [
-        { kind: 'fill', id: 'e1', before: 'Je viens ', after: ' Brésil.', answer: 'du', accept: ['du', 'de'] },
-        { kind: 'choice', id: 'e2', prompt: 'O que "Je viens du Brésil" quer dizer?', answer: 'b', options: [{ id: 'a', text: 'Eu me chamo Ana' }, { id: 'b', text: 'Eu venho do Brasil' }, { id: 'c', text: 'Eu vou para o Brasil' }] },
-        { kind: 'listen', id: 'e3', speak: 'Je viens du Brésil', accept: ['je viens du bresil'] },
-      ],
-      pool: [
         { kind: 'fill', id: 'p1', before: 'Je viens ', after: ' Brésil.', answer: 'du', accept: ['du', 'de'] },
         { kind: 'fill', id: 'p2', before: 'Je viens ', after: ' France.', answer: 'de', accept: ['de', 'du'] },
         { kind: 'choice', id: 'p3', prompt: 'Como se pergunta "de onde você vem"?', answer: 'a', options: [{ id: 'a', text: "D'où venez-vous ?" }, { id: 'b', text: 'Comment ça va ?' }, { id: 'c', text: 'Ça coûte combien ?' }] },

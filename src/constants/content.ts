@@ -37,25 +37,20 @@ export type Lesson = {
   id: string;
   title: string;
   subtitle: string;
+  /** Banco de exercícios da lição. */
   exercises: Exercise[];
   /**
-   * Banco maior de exercícios. Quando existe, a lição sorteia `perSession`
-   * em vez de usar `exercises` em ordem — aí refazer a mesma lição não repete
-   * a mesma sequência. `exercises` vira só a ordem canônica de primeira vez.
+   * Quantos exercícios sortear por sessão. Quando existe, a lição embaralha
+   * `exercises` e sorteia `perSession` (refazer não repete a sequência); sem
+   * ele, os exercícios são usados na ordem escrita.
    */
-  pool?: Exercise[];
   perSession?: number;
 };
 
 export function drawSession(lesson: Lesson): Exercise[] {
-  if (!lesson.pool || lesson.pool.length === 0) return lesson.exercises;
-  const want = Math.min(lesson.perSession ?? 8, lesson.pool.length);
-  return shuffle(lesson.pool).slice(0, want);
-}
-
-/** Todos os exercícios de uma lição (fixos + banco), para agendar revisões. */
-export function allExercises(lesson: Lesson): Exercise[] {
-  return [...lesson.exercises, ...(lesson.pool ?? [])];
+  if (!lesson.perSession) return lesson.exercises;
+  const want = Math.min(lesson.perSession, lesson.exercises.length);
+  return shuffle(lesson.exercises).slice(0, want);
 }
 
 export function shuffle<T>(items: T[]): T[] {
@@ -94,43 +89,8 @@ const EN: Course = {
           id: 'en-u1-l1',
           title: 'Cumprimentos',
           subtitle: 'oi, olá, até logo',
-          exercises: [
-            {
-              kind: 'choice',
-              id: 'e1',
-              prompt: 'Como você diz "bom dia" em inglês?',
-              answer: 'b',
-              options: [
-                { id: 'a', text: 'good night' },
-                { id: 'b', text: 'good morning' },
-                { id: 'c', text: 'good evening' },
-                { id: 'd', text: 'goodbye' },
-              ],
-            },
-            {
-              kind: 'translate',
-              id: 'e2',
-              from: 'Olá!',
-              accept: ['hello', 'hi'],
-              hint: 'O primeiro "olá" que todo mundo aprende.',
-            },
-            {
-              kind: 'listen',
-              id: 'e3',
-              speak: 'Good evening',
-              accept: ['good evening', 'goodevening'],
-            },
-            {
-              kind: 'fill',
-              id: 'e4',
-              before: 'Good ',
-              after: '!',
-              answer: 'morning',
-              accept: ['morning'],
-            },
-          ],
           perSession: 10,
-          pool: [
+          exercises: [
             {
               kind: 'choice',
               id: 'p1',
@@ -172,6 +132,7 @@ const EN: Course = {
               id: 'p4',
               from: 'Olá!',
               accept: ['hello', 'hi', 'hey'],
+              hint: 'O primeiro "olá" que todo mundo aprende.',
             },
             {
               kind: 'translate',
@@ -310,33 +271,6 @@ const EN: Course = {
           subtitle: 'país e nacionalidade',
           perSession: 10,
           exercises: [
-            {
-              kind: 'fill',
-              id: 'e1',
-              before: 'I am ',
-              after: ' Brazil.',
-              answer: 'from',
-              accept: ['from'],
-            },
-            {
-              kind: 'choice',
-              id: 'e2',
-              prompt: '"Where are you from?" responde:',
-              answer: 'b',
-              options: [
-                { id: 'a', text: 'I am fine' },
-                { id: 'b', text: 'I am from Brazil' },
-                { id: 'c', text: 'I am Ana' },
-              ],
-            },
-            {
-              kind: 'listen',
-              id: 'e3',
-              speak: 'I am from Brazil',
-              accept: ['i am from brazil', 'imfrombrazil', "i'm from brazil", "i'mfrombrazil"],
-            },
-          ],
-          pool: [
             {
               kind: 'fill',
               id: 'p1',

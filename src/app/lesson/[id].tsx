@@ -2,7 +2,7 @@ import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useEffect, useState } from 'react';
 
 import { ExercisePlayer } from '@/components/exercise-player';
-import { allExercises, drawSession, getLesson, type Exercise, type Lesson } from '@/constants/content';
+import { drawSession, getLesson, type Exercise, type Lesson } from '@/constants/content';
 import type { LanguageId } from '@/constants/languages';
 import {
   addXp,
@@ -29,7 +29,7 @@ function findLesson(id: string | undefined): { language: LanguageId; lesson: Les
 /** Sorteio do dia, com os exercícios vencidos na repetição espaçada na frente. */
 function buildSession(lesson: Lesson, progress: Progress): Exercise[] {
   const base = drawSession(lesson);
-  const due = allExercises(lesson).filter((e) => isDue(progress, reviewKey(lesson.id, e.id)));
+  const due = lesson.exercises.filter((e) => isDue(progress, reviewKey(lesson.id, e.id)));
   if (due.length === 0) return base;
   const dueIds = new Set(due.map((e) => e.id));
   return [...due, ...base.filter((e) => !dueIds.has(e.id))];
