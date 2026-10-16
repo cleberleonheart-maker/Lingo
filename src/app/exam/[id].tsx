@@ -21,6 +21,10 @@ export default function ExamScreen() {
         exercises={exam.exercises}
         language={language}
         onExit={goToMap}
+        onDead={({ correct }) => {
+          // Vidas a zero na prova: XP parcial, sem `completeExam`.
+          void addXp(correct * XP_PER_CORRECT).then(goToMap);
+        }}
         onResult={(exerciseId, correct) => {
           void recordAnswer(reviewKey(exam.id, exerciseId), correct);
         }}

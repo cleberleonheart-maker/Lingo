@@ -24,11 +24,13 @@ type Props = {
   onFinish: (score: { correct: number; total: number }) => void;
   /** Botao de sair: abandona a licao sem conta-la como concluida. */
   onExit: () => void;
+  /** Vidas a zero: credita o XP do que acertou, mas nao conclui a licao. */
+  onDead: (score: { correct: number; total: number }) => void;
   /** Resultado de cada exercício, para a repetição espaçada. */
   onResult?: (exerciseId: string, correct: boolean) => void;
 };
 
-export function ExercisePlayer({ language, exercises, onFinish, onExit, onResult }: Props) {
+export function ExercisePlayer({ language, exercises, onFinish, onExit, onDead, onResult }: Props) {
   const insets = useSafeAreaInsets();
   const [index, setIndex] = useState(0);
   const [given, setGiven] = useState('');
@@ -288,7 +290,13 @@ export function ExercisePlayer({ language, exercises, onFinish, onExit, onResult
           accessibilityRole="button"
           accessibilityState={{ disabled: !answered && !dead }}
           disabled={!answered && !dead}
-          onPress={() => (dead ? onExit() : advance(wasRight))}
+          onPress={() => {
+            if (dead) {
+              onDead({ correct: correctCount, total });
+              return;
+            }
+            advance(wasRight);
+          }}
           ref={ctaRef}
           style={[styles.cta, !answered && !dead && styles.ctaOff]}>
           <Text style={styles.ctaText}>{dead ? 'Voltar ao mapa' : answered ? 'Continuar' : 'Verificar'}</Text>

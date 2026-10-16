@@ -81,8 +81,6 @@ em checagem de tipo; só aparece quando alguém faz a lição e olha o resultado
 
 - States `.playing`/`.sleep` do avatar e a recompensa diária do Duolingo.
 - Lições 2 e as provas ainda são fixas (sem `pool`).
-- Ao morrer (vidas a zero) o XP do que foi acertado é descartado.
-- Acertar de primeira não entra na revisão espaçada — só o que se erra volta.
 - `exercises` e `pool` duplicam o mesmo conteúdo; `drawSession` só usa o `pool`.
 - `package-lock.json` é novo e nunca foi revisado.
 - Áudio do japonês depende de voz instalada no `expo-speech`; não confirmado em
@@ -271,6 +269,23 @@ O validador foi de 168 para 177 exercícios e segue com **0 problemas**.
   `expo-splash-screen`) apontam para dependências dessas ferramentas. Não vale
   `npm audit fix --force`: mexeria nas versões presas pelo Expo SDK 57. A
   correção vem com atualização do SDK.
+
+## XP parcial e revisão de acertos (2026-10-16)
+
+- **XP parcial ao zerar as vidas** — antes, o `ExercisePlayer` só premiava no
+  `onFinish` (fim normal). Ao morrer, o CTA chamava `onExit`, que descartava o XP
+  do que já tinha sido acertado. Agora o player tem um `onDead(score)` próprio:
+  ao morrer, a lição chama `addXp(correct * XP_PER_CORRECT)` (sem
+  `completeLesson`) e volta ao mapa; a prova faz o mesmo (sem `completeExam`).
+  Sair pelo X continua sem creditar nada.
+- **`src/lib/review.ts`** — a revisão espaçada saiu de `progress.ts` para um
+  módulo puro (`applyAnswer`, `isDueAt`, `REVIEW_STEPS`, `Review`), coberto por
+  `test/review.test.ts`. `progress.ts` só importa e reexporta.
+- **Acerto de primeira agora entra na revisão** — o `recordAnswer` antigo tinha
+  `if (!existing) return current`, então o primeiro acerto nunca era agendado: só
+  o que se errava voltava. Agora o primeiro acerto entra no passo 1 (revisa em
+  1 dia); acertos seguintes avançam (3 dias) até o item sair da fila. Errar
+  reinicia no passo 0 (5 min). Total de testes foi de 18 para 25.
 
 ## Validador de conteúdo
 

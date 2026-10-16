@@ -1,5 +1,10 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
+import { applyAnswer, isDueAt, type Review } from '@/lib/review';
+
+export { REVIEW_STEPS } from '@/lib/review';
+export type { Review } from '@/lib/review';
+
 const KEY = 'lingo/progress/v1';
 
 /** Meta diária de XP. */
@@ -30,12 +35,6 @@ export type Progress = {
   /** Revisão espaçada: chave do exercício -> estado da revisão. */
   reviews: Record<string, Review>;
 };
-
-/** Estado de uma revisão espaçada. */
-export type Review = { step: number; due: number };
-
-/** Intervalos entre revisões (ms): 5 min, 1 dia, 3 dias. */
-export const REVIEW_STEPS = [5 * 60_000, 24 * 60 * 60_000, 3 * 24 * 60 * 60_000];
 
 /** Progresso zerado. Sempre devolve um objeto novo (nunca compartilha estado). */
 export function emptyProgress(): Progress {
@@ -178,32 +177,14 @@ export function reviewKey(containerId: string, exerciseId: string) {
 
 /** A revisão está vencida (ou nunca feita)? */
 export function isDue(progress: Progress, key: string) {
-  const review = progress.reviews[key];
-  return review !== undefined && review.due <= Date.now();
+  return isDueAt(progress.reviews[key], Date.now());
 }
 
 /** Registra o resultado de um exercício e reagenda a revisão espaçada. */
 export function recordAnswer(key: string, correct: boolean): Promise<Progress> {
   const now = Date.now();
-  return update((current) => {
-    const existing = current.reviews[key];
-
-    if (!correct) {
-      return {
-        ...current,
-        reviews: { ...current.reviews, [key]: { step: 0, due: now + REVIEW_STEPS[0] } },
-      };
-    }
-
-    if (!existing) return current;
-
-    const reviews = { ...current.reviews };
-    const step = existing.step + 1;
-    if (step >= REVIEW_STEPS.length) {
-      delete reviews[key];
-    } else {
-      reviews[key] = { step, due: now + REVIEW_STEPS[step] };
-    }
-    return { ...current, reviews };
-  });
+  return update((current) => ({
+    ...current,
+    reviews: applyAnswer(current.reviews, key, correct, now),
+  }));
 }

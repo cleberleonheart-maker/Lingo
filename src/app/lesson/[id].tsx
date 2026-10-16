@@ -79,6 +79,11 @@ export default function LessonScreen() {
       exercises={exercises}
       language={language}
       onExit={goToMap}
+      onDead={({ correct }) => {
+        // Morreu no meio: credita o XP do que acertou, mas não conclui a lição
+        // (por isso não chama `completeLesson`). Antes esse XP era descartado.
+        void addXp(correct * XP_PER_CORRECT).then(goToMap);
+      }}
       onResult={(exerciseId, correct) => {
         void recordAnswer(reviewKey(lesson.id, exerciseId), correct);
       }}
