@@ -33,24 +33,32 @@ export type Exercise =
   /**ouvir e escrever o que ouviu. */
   | { kind: 'listen'; id: string; speak: string; accept: string[] };
 
-export type Lesson = {
-  id: string;
-  title: string;
-  subtitle: string;
-  /** Banco de exercícios da lição. */
+/**
+ * Um container com banco de exercícios e sessão sorteável: lição ou prova.
+ * As duas são embaralhadas na abertura da tela pelo mesmo `drawSession`.
+ */
+export type SessionContainer = {
+  /** Banco de exercícios. */
   exercises: Exercise[];
   /**
-   * Quantos exercícios sortear por sessão. Quando existe, a lição embaralha
+   * Quantos exercícios sortear por sessão. Quando existe, o container embaralha
    * `exercises` e sorteia `perSession` (refazer não repete a sequência); sem
-   * ele, os exercícios são usados na ordem escrita.
+   * ele, os exercícios são usados na ordem escrita. Nas provas o valor é o
+   * tamanho do banco: embaralha sem perder cobertura (regra do validador).
    */
   perSession?: number;
 };
 
-export function drawSession(lesson: Lesson): Exercise[] {
-  if (!lesson.perSession) return lesson.exercises;
-  const want = Math.min(lesson.perSession, lesson.exercises.length);
-  return shuffle(lesson.exercises).slice(0, want);
+export type Lesson = {
+  id: string;
+  title: string;
+  subtitle: string;
+} & SessionContainer;
+
+export function drawSession(container: SessionContainer): Exercise[] {
+  if (!container.perSession) return container.exercises;
+  const want = Math.min(container.perSession, container.exercises.length);
+  return shuffle(container.exercises).slice(0, want);
 }
 
 export function shuffle<T>(items: T[]): T[] {
@@ -67,7 +75,7 @@ export type Unit = {
   title: string;
   description: string;
   lessons: Lesson[];
-  exam: { id: string; title: string; exercises: Exercise[] };
+  exam: { id: string; title: string } & SessionContainer;
 };
 
 export type Course = {
@@ -210,6 +218,7 @@ const EN: Course = {
           id: 'en-u1-l2',
           title: 'Meu nome é',
           subtitle: 'se apresentar',
+          perSession: 6,
           exercises: [
             {
               kind: 'match',
@@ -365,6 +374,7 @@ const EN: Course = {
       exam: {
         id: 'en-u1-exam',
         title: 'Prova da unidade 1',
+        perSession: 5,
         exercises: [
           {
             kind: 'choice',

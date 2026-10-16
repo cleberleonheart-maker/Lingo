@@ -5,8 +5,9 @@ import type { LanguageId } from '@/constants/languages';
 /**
  * Validador de conteúdo: checa o que o typecheck não pega (opção certa dentro do
  * próprio enunciado, `fill` com resposta vazia, `translate` com `from` no idioma
- * alvo, coluna de `match` repetida, banco menor que a sessão, ids duplicados e
- * caractere de outro alfabeto). As regras nasceram dos bugs de 2026-09-29.
+ * alvo, coluna de `match` repetida, banco menor que a sessão, ids duplicados,
+ * caractere de outro alfabeto, `perSession` faltando em lição/prova e prova que
+ * não cobre o banco inteiro). As regras nasceram dos bugs de 2026-09-29.
  *
  * Devolve a lista de problemas; vazia quando está tudo certo.
  */
@@ -131,6 +132,10 @@ export function findContentProblems(): string[] {
         if (new Set(ids).size !== ids.length) err(file, where, 'ids duplicados');
         if (lesson.perSession && lesson.perSession > lesson.exercises.length)
           err(file, where, `perSession (${lesson.perSession}) > exercícios (${lesson.exercises.length})`);
+        // Toda lição embaralha ao ser refazida: sem `perSession` a ordem fixa
+        // se repete igualzinho (fecha a pendência de 2026-10-16).
+        if (!lesson.perSession)
+          err(file, where, 'lição sem perSession (refazer repete a sequência)');
         // Mesmo conteúdo com id diferente infla a revisão espaçada (dois itens
         // para a mesma pergunta). O id entra zerado para comparar só o conteúdo.
         const sigs = lesson.exercises.map((e) => JSON.stringify({ ...e, id: '' }));
@@ -139,9 +144,19 @@ export function findContentProblems(): string[] {
         lesson.exercises.forEach((e, i) => checkEx(e, `${where} ex[${i}]`, file));
       }
       if (unit.exam) {
-        unit.exam.exercises.forEach((e, i) =>
-          checkEx(e, `exam ${unit.exam.id} ex[${i}]`, file)
-        );
+        const exam = unit.exam;
+        const examWhere = `exam ${exam.id}`;
+        // A prova embaralha sempre (senão a ordem fixa entrega a resposta na
+        // segunda tentativa) e `perSession` tem que ser o banco inteiro, ou a
+        // prova deixaria exercícios de fora da cobrança.
+        if (!exam.perSession) err(file, examWhere, 'prova sem perSession (ordem fixa)');
+        else if (exam.perSession !== exam.exercises.length)
+          err(
+            file,
+            examWhere,
+            `perSession (${exam.perSession}) != exercícios (${exam.exercises.length}): a prova perderia cobertura`
+          );
+        exam.exercises.forEach((e, i) => checkEx(e, `${examWhere} ex[${i}]`, file));
       }
     }
   }

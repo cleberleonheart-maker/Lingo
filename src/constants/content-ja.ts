@@ -44,6 +44,7 @@ export const JA: Unit = {
       id: 'ja-u1-l2',
       title: 'じこしょうかい',
       subtitle: 'watashi wa…',
+      perSession: 6,
       exercises: [
         {
           kind: 'match',
@@ -92,6 +93,7 @@ export const JA: Unit = {
   exam: {
     id: 'ja-u1-exam',
     title: '第1単元の試験',
+    perSession: 5,
     exercises: [
       { kind: 'choice', id: 'q1', prompt: '「こんばんは」は?|O que "konbanwa" é?', answer: 'a', options: [{ id: 'a', text: 'こんばんは (boa noite)' }, { id: 'b', text: 'おはよう (bom dia)' }, { id: 'c', text: 'さようなら (adeus)' }] },
       { kind: 'translate', label: 'leia em romaji: kana -> teclado', id: 'q2', from: 'わたしはパウロです。', accept: ['watashi wa pauru desu'] },

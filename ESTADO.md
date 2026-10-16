@@ -81,13 +81,15 @@ em checagem de tipo; só aparece quando alguém faz a lição e olha o resultado
 
 ## Pendências
 
-- Lições 2 e as provas ainda são fixas (sem `perSession`).
 - `package-lock.json` já foi revisto (ver seção própria): **555 dependências de
   produção sem `resolved`/`integrity`** e binários por plataforma desalinhados.
   Consertar exige regenerar o lock com Node ≥ 22.13 — ver os três motivos em
   que não foi feito.
 - Áudio do japonês depende de voz instalada no `expo-speech`; não confirmado em
   hardware real.
+- Lições 2 embaralham, mas o banco continua com os mesmos 6 itens (não há
+  exercício novo para sortear). Bancos maiores exigem traduzir conteúdo novo
+  nos 6 idiomas — decidir antes se vale o risco.
 
 ## Bugs de conteúdo achados rodando (2026-09-29, tarde)
 
@@ -458,6 +460,37 @@ repor `resolved`/`integrity` nas 555 e reconciliar os binários por plataforma.
 Não fiz agora por três motivos: (a) aqui só há Node 18; (b) re-resolver tudo
 dentro das faixas pode trocar versões transitivas e **mexer nos pins do Expo
 SDK 57**; (c) é uma mudança grande, difícil de validar sem poder rodar o app.
+
+## Lições 2 e provas embaralhadas (2026-10-16)
+
+Fecha a pendência "lições 2 e provas fixas". Antes só l1 e l3 tinham
+`perSession`: refazer a lição 2 ou a prova repetia a sequência idêntica (e, na
+prova, a ordem fixa ajudava a decorar a posição da resposta).
+
+- **`SessionContainer`** — novo tipo `{ exercises, perSession? }` que `Lesson` e
+  o `exam` passam a herdar (`exam: { id, title } & SessionContainer`).
+  `drawSession` deixou de receber `Lesson` e passou a receber o container, então
+  lição e prova compartilham o mesmo sorteio.
+- **Lições 2** — `perSession: 6` nos 6 idiomas (banco de 6, sorteia os 6
+  embaralhados: refazer muda a ordem).
+- **Provas** — `perSession: 5` nos 6 idiomas (banco de 5, cobertura total) e
+  `exam/[id].tsx` passou a chamar `drawSession(exam)` antes do JSX, do mesmo jeito
+  que a lição: o sorteio tem que ficar estável entre renders, senão o exercício
+  trocava no meio da prova (mesmo bug do `key` estável já corrigido na lição).
+- **2 regras novas no validador** — toda lição precisa de `perSession` e toda
+  prova precisa de `perSession === exercises.length`. A segunda existe porque
+  perder cobertura é silencioso: um `perSession: 5` esquecido depois de
+  acrescentar um 6º exercício tiraria a questão da prova sem ninguém notar.
+- **2 testes novos** (37 → 39) — um prova que `drawSession` na prova embaralha e
+  cobre o banco inteiro em 30 sorteios seguidos; outro que toda lição e toda
+  prova tem `perSession`, travando a pendência para ela não voltar.
+
+Verificado: `tsc --noEmit` limpo, lint 0 problemas, 39/39 testes. **Nenhum texto
+novo foi escrito** — não houve tradução nesta rodada.
+
+**Resta**: o banco da lição 2 segue sendo os mesmos 6 itens (só a ordem muda no
+refazer). Um banco maior (9-10 sorteando 6) exigiria escrever exercício novo em
+6 idiomas — risco de tradução, vira pendência própria.
 
 ## Validador de conteúdo
 

@@ -1,7 +1,7 @@
 import { useLocalSearchParams, useRouter } from 'expo-router';
 
 import { ExercisePlayer } from '@/components/exercise-player';
-import { getExam } from '@/constants/content';
+import { drawSession, getExam } from '@/constants/content';
 import type { LanguageId } from '@/constants/languages';
 import { addXp, completeExam, recordAnswer, reviewKey, XP_PER_CORRECT } from '@/lib/progress';
 
@@ -15,10 +15,15 @@ export default function ExamScreen() {
     const exam = getExam(language, id);
     if (!exam) continue;
     const goToMap = () => router.replace({ pathname: '/', params: { lang: language } });
+    // Sorteado uma vez (o compilador mantém estável entre renders), como na
+    // lição: reembaralhar a cada render trocaria o exercício no meio da prova.
+    // `perSession` da prova é o tamanho do banco, então a ordem muda entre uma
+    // tentativa e outra mas os 5 exercícios sempre aparecem.
+    const exercises = drawSession(exam);
     return (
       <ExercisePlayer
         key={exam.id}
-        exercises={exam.exercises}
+        exercises={exercises}
         language={language}
         onExit={goToMap}
         onDead={({ correct }) => {

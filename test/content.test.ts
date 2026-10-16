@@ -78,6 +78,45 @@ test('drawSession não sorteia mais que o banco', () => {
   assert.equal(drawSession(lesson).length, 1);
 });
 
+test('drawSession na prova embaralha sem perder cobertura', () => {
+  const exercises = Array.from({ length: 5 }, (_, i) => fill(`q${i}`));
+  // Objeto no formato de prova (sem id/title de lição): o sorteio é o mesmo.
+  const exam = { id: 'x', title: '', exercises, perSession: exercises.length };
+  const ids = exercises.map((e) => e.id).sort();
+  const orders = new Set<string>();
+  for (let i = 0; i < 30; i++) {
+    const session = drawSession(exam);
+    assert.equal(session.length, exercises.length, 'a prova perdeu cobertura');
+    assert.deepEqual(
+      session.map((e) => e.id).sort(),
+      ids,
+      'a prova sorteou item repetido ou de fora do banco'
+    );
+    orders.add(session.map((e) => e.id).join(','));
+  }
+  assert.ok(orders.size > 1, '30 sorteios deram sempre a mesma ordem');
+});
+
+test('toda lição e toda prova tem perSession (refazer embaralha)', () => {
+  for (const course of Object.values(COURSES)) {
+    for (const unit of course.units) {
+      for (const lesson of unit.lessons) {
+        assert.ok(lesson.perSession, `${lesson.id} sem perSession`);
+        assert.ok(
+          lesson.perSession <= lesson.exercises.length,
+          `${lesson.id}: perSession maior que o banco`
+        );
+      }
+      assert.ok(unit.exam.perSession, `${unit.exam.id} sem perSession`);
+      assert.equal(
+        unit.exam.perSession,
+        unit.exam.exercises.length,
+        `${unit.exam.id}: a prova tem que cobrir o banco inteiro`
+      );
+    }
+  }
+});
+
 test('getLesson e getExam acham por id e devolvem undefined quando não existe', () => {
   assert.ok(getLesson('en', 'en-u1-l1'));
   assert.equal(getLesson('en', 'nao-existe'), undefined);

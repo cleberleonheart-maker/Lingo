@@ -39,6 +39,7 @@ export const DE: Unit = {
       id: 'de-u1-l2',
       title: 'Ich heiße',
       subtitle: 'sich vorstellen',
+      perSession: 6,
       exercises: [
         {
           kind: 'match',
@@ -88,6 +89,7 @@ export const DE: Unit = {
   exam: {
     id: 'de-u1-exam',
     title: 'Prüfung der Einheit 1',
+    perSession: 5,
     exercises: [
       { kind: 'choice', id: 'q1', prompt: '"Gute Nacht" significa…', answer: 'a', options: [{ id: 'a', text: 'boa noite' }, { id: 'b', text: 'bom dia' }, { id: 'c', text: 'adeus' }] },
       { kind: 'translate', id: 'q2', from: 'Meu nome é Paul.', accept: ['ich heiße paul', 'ich heisse paul'] },

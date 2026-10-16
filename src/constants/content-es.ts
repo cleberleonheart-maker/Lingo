@@ -40,6 +40,7 @@ export const ES: Unit = {
       id: 'es-u1-l2',
       title: 'Me llamo',
       subtitle: 'presentarse',
+      perSession: 6,
       exercises: [
         {
           kind: 'match',
@@ -89,6 +90,7 @@ export const ES: Unit = {
   exam: {
     id: 'es-u1-exam',
     title: 'Examen de la unidad 1',
+    perSession: 5,
     exercises: [
       { kind: 'choice', id: 'q1', prompt: '"Buenas noches" significa…', answer: 'a', options: [{ id: 'a', text: 'boa noite' }, { id: 'b', text: 'bom dia' }, { id: 'c', text: 'adeus' }] },
       { kind: 'translate', id: 'q2', from: 'Meu nome é Pedro.', accept: ['me llamo pedro'] },
