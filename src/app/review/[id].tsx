@@ -46,9 +46,13 @@ export default function ReviewScreen() {
   // O id de cada item vira a própria chave de revisão (`container#exercise`),
   // única entre lições e provas. Assim o `onResult` já sabe onde reagendar sem
   // precisar carregar de volta qual lição era.
-  const exercises = shuffle(dueItems(language, progress.reviews))
-    .slice(0, REVIEW_MAX)
-    .map((item) => ({ ...item.exercise, id: reviewKey(item.containerId, item.exercise.id) }));
+  // `dueItems` já vem do mais atrasado para o menos: cortar antes de embaralhar
+  // garante que os 20 escolhidos sejam os mais urgentes (a ordem da sessão em si
+  // é sorteada, para não decorar a sequência).
+  const exercises = shuffle(dueItems(language, progress.reviews).slice(0, REVIEW_MAX)).map((item) => ({
+    ...item.exercise,
+    id: reviewKey(item.containerId, item.exercise.id),
+  }));
 
   if (exercises.length === 0) {
     return (

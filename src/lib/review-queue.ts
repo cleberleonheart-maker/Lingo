@@ -7,11 +7,14 @@ export type DueItem = {
   /** Id da lição ou da prova onde o exercício foi respondido. */
   containerId: string;
   exercise: Exercise;
+  /** Quando venceu (ms). Quanto menor, mais atrasado. */
+  due: number;
 };
 
 /**
- * Itens vencidos na repetição espaçada de um idioma (lições e provas). Pura
- * (recebe `reviews` e `now`) para dar para testar sem `AsyncStorage`.
+ * Itens vencidos na repetição espaçada de um idioma (lições e provas), do mais
+ * atrasado para o menos. Pura (recebe `reviews` e `now`) para dar para testar
+ * sem `AsyncStorage`.
  *
  * Só entram exercícios que já têm revisão agendada: quem nunca foi respondido
  * não vence (`isDueAt` devolve `false` para revisão inexistente).
@@ -27,9 +30,9 @@ export function dueItems(
   for (const container of containers) {
     for (const exercise of container.exercises) {
       const review = reviews[reviewKey(container.id, exercise.id)];
-      if (isDueAt(review, now)) items.push({ containerId: container.id, exercise });
+      if (review && isDueAt(review, now)) items.push({ containerId: container.id, exercise, due: review.due });
     }
   }
 
-  return items;
+  return items.sort((a, b) => a.due - b.due);
 }

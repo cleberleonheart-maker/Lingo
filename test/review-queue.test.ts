@@ -19,6 +19,7 @@ test('dueItems devolve o item vencido com o container de origem', () => {
   assert.equal(items.length, 1);
   assert.equal(items[0].containerId, firstLesson.id);
   assert.equal(items[0].exercise.id, firstExercise.id);
+  assert.equal(items[0].due, NOW - 1);
 });
 
 test('dueItems ignora revisão futura e revisão inexistente', () => {
@@ -27,6 +28,23 @@ test('dueItems ignora revisão futura e revisão inexistente', () => {
   };
   assert.deepEqual(dueItems('en', future, NOW), []);
   assert.deepEqual(dueItems('en', {}, NOW), []);
+});
+
+test('dueItems vem do mais atrasado para o menos', () => {
+  const lessons = COURSES.en.units[0].lessons;
+  const a = lessons[0].exercises[0];
+  const b = lessons[1].exercises[0];
+  const reviews: Record<string, Review> = {
+    // A lição 1 é a primeira do conteúdo, mas tem que sair depois: é ela que
+    // está menos atrasada. A ordem é por atraso, não por ordem de lição.
+    [reviewKey(lessons[0].id, a.id)]: { step: 1, due: NOW - 1000 },
+    [reviewKey(lessons[1].id, b.id)]: { step: 0, due: NOW - 5000 },
+  };
+  const items = dueItems('en', reviews, NOW);
+  assert.deepEqual(
+    items.map((item) => item.containerId),
+    [lessons[1].id, lessons[0].id]
+  );
 });
 
 test('dueItems inclui exercícios da prova (container é a prova)', () => {

@@ -385,11 +385,16 @@ próprio, que junta os vencidos de todas as lições **e provas** do idioma.
   também marca o dia para o streak), mas **não** conclui lição nem prova. Morrer
   no meio credita o XP parcial, igual às lições. Tela vazia (nada vencido) tem um
   "Nada para revisar agora" + botão de volta.
+- **`dueItems` prioriza o atraso** — cada item carrega o `due` e volta do mais
+  atrasado para o menos. A tela **corta antes de embaralhar**: os escolhidos são
+  sempre os mais urgentes, e só a ordem da sessão é sorteada (para não decorar a
+  sequência). Antes o embaralho vinha antes do corte, então podia passar por
+  cima do item mais atrasado.
 - **Card no mapa** — ao lado da recompensa: mostra "N revisão(ões) para treinar
   de novo" e fica destacado (borda violeta) quando há item vencido; com tudo em
   dia, aparece apagado ("Tudo em dia"). Rota registrada no `Stack` raiz.
 
-`tsc` limpo, `npm test` **36/36**, lint sem erros. Como o resto da UI, **não foi
+`tsc` limpo, `npm test` **37/37**, lint sem erros. Como o resto da UI, **não foi
 validado em dispositivo**; o que dá para garantir é a fila (testes) e o tipo.
 
 ## Validador de conteúdo
