@@ -1,9 +1,11 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import { applyAnswer, isDueAt, type Review } from '@/lib/review';
+import { canClaimReward, rewardFor } from '@/lib/reward';
 
 export { REVIEW_STEPS } from '@/lib/review';
 export type { Review } from '@/lib/review';
+export { REWARD_BASE, REWARD_MAX, REWARD_PER_STREAK, rewardFor } from '@/lib/reward';
 
 const KEY = 'lingo/progress/v1';
 
@@ -32,6 +34,8 @@ export type Progress = {
   today: string | null;
   /** Meta diária de XP. */
   dailyGoal: number;
+  /** Data (YYYY-MM-DD) em que a recompensa diária foi resgatada pela última vez. */
+  lastReward: string | null;
   /** Revisão espaçada: chave do exercício -> estado da revisão. */
   reviews: Record<string, Review>;
 };
@@ -48,6 +52,7 @@ export function emptyProgress(): Progress {
     todayXp: 0,
     today: null,
     dailyGoal: DAILY_GOAL,
+    lastReward: null,
     reviews: {},
   };
 }
@@ -126,19 +131,46 @@ export function touchStudy(): Promise<Progress> {
   return update((current) => withStudy(current, now));
 }
 
+/** Soma XP ao dia corrente (zera o contador se virou o dia). Não mexe no streak. */
+function addToDay(current: Progress, amount: number, now: string): Progress {
+  const sameDay = current.today === now;
+  return {
+    ...current,
+    xp: current.xp + amount,
+    today: now,
+    todayXp: (sameDay ? current.todayXp : 0) + amount,
+  };
+}
+
 /** Soma XP do dia (zerando se mudou o dia) e avança o streak. */
 export function addXp(amount: number): Promise<Progress> {
   const now = today();
+  return update((current) => withStudy(addToDay(current, amount, now), now));
+}
+
+/** Estado da recompensa diária, para a tela inicial. */
+export function rewardState(progress: Progress): 'ready' | 'claimed' | 'locked' {
+  const now = today();
+  if (progress.lastReward === now) return 'claimed';
+  return canClaimReward(progress, now) ? 'ready' : 'locked';
+}
+
+/**
+ * Resgata a recompensa do dia: credita o XP (escalado pelo streak) e marca o
+ * dia como resgatado. Se já foi resgatada hoje, não credita nada (`xp: 0`).
+ * Não avança o streak: o resgate depende do estudo, não o contrário.
+ */
+export function claimDailyReward(): Promise<{ progress: Progress; xp: number }> {
+  const now = today();
+  let granted = 0;
   return update((current) => {
-    const sameDay = current.today === now;
-    const withXp: Progress = {
-      ...current,
-      xp: current.xp + amount,
-      today: now,
-      todayXp: (sameDay ? current.todayXp : 0) + amount,
-    };
-    return withStudy(withXp, now);
-  });
+    if (!canClaimReward(current, now)) {
+      granted = 0;
+      return current;
+    }
+    granted = rewardFor(current.streak);
+    return addToDay({ ...current, lastReward: now }, granted, now);
+  }).then((progress) => ({ progress, xp: granted }));
 }
 
 export function completeLesson(lessonId: string): Promise<Progress> {

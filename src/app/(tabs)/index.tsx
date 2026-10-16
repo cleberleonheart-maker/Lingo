@@ -8,7 +8,16 @@ import { LocalClock } from '@/components/local-clock';
 import { COURSES } from '@/constants/content';
 import { LANGUAGES, LANGUAGE_LIST, type LanguageId } from '@/constants/languages';
 import { INK } from '@/constants/theme';
-import { emptyProgress, isExamDone, isLessonDone, loadProgress, type Progress } from '@/lib/progress';
+import {
+  claimDailyReward,
+  emptyProgress,
+  isExamDone,
+  isLessonDone,
+  loadProgress,
+  rewardFor,
+  rewardState,
+  type Progress,
+} from '@/lib/progress';
 
 export default function Home() {
   const router = useRouter();
@@ -20,6 +29,7 @@ export default function Home() {
     ? (wanted as LanguageId)
     : 'en';
   const [progress, setProgress] = useState<Progress | null>(null);
+  const [claiming, setClaiming] = useState(false);
 
   // `useFocusEffect` e nao `useEffect`: a licao salva o progresso no
   // AsyncStorage e volta com `router.back()`, que NAO remonta esta tela. Com
@@ -39,6 +49,16 @@ export default function Home() {
   const lang = LANGUAGES[language];
   const course = COURSES[language];
   const p = progress ?? emptyProgress();
+
+  const reward = rewardState(p);
+  const rewardXp = rewardFor(p.streak);
+  const openReward = () => {
+    if (claiming || reward !== 'ready') return;
+    setClaiming(true);
+    claimDailyReward()
+      .then(({ progress: next }) => setProgress(next))
+      .finally(() => setClaiming(false));
+  };
 
   return (
     <ScrollView
@@ -74,6 +94,32 @@ export default function Home() {
           />
         </View>
       </View>
+
+      <Pressable
+        accessibilityRole="button"
+        accessibilityState={{ disabled: reward !== 'ready' }}
+        accessibilityLabel={
+          reward === 'ready'
+            ? `Recompensa do dia: abrir ${rewardXp} XP`
+            : reward === 'claimed'
+              ? `Recompensa de hoje já resgatada: ${rewardXp} XP`
+              : 'Recompensa do dia: estude hoje para abrir'
+        }
+        disabled={reward !== 'ready'}
+        onPress={openReward}
+        style={[styles.reward, reward === 'ready' && styles.rewardReady]}>
+        <Text style={styles.rewardIcon}>{reward === 'claimed' ? '✅' : '🎁'}</Text>
+        <View style={styles.rewardText}>
+          <Text style={styles.rewardTitle}>Recompensa do dia</Text>
+          <Text style={[styles.rewardSub, reward === 'ready' && styles.rewardSubReady]}>
+            {reward === 'ready'
+              ? `Toque para abrir +${rewardXp} XP`
+              : reward === 'claimed'
+                ? `+${rewardXp} XP resgatado`
+                : 'Estude hoje para abrir'}
+          </Text>
+        </View>
+      </Pressable>
 
       <ScrollView contentContainerStyle={styles.langRow} horizontal showsHorizontalScrollIndicator={false}>
         {LANGUAGE_LIST.map((item) => {
@@ -158,13 +204,29 @@ const styles = StyleSheet.create({
   clock: { marginBottom: 2 },
   hello: { color: INK.white, fontSize: 30, fontWeight: '800' },
   streak: { color: INK.muted, fontSize: 15 },
-  xp: { color: '#FFD166', fontSize: 15, fontWeight: '700' },
+  xp: { color: INK.gold, fontSize: 15, fontWeight: '700' },
   goal: { backgroundColor: INK.card, borderColor: INK.border, borderRadius: 14, borderWidth: 2, gap: 8, padding: 14 },
   goalHead: { flexDirection: 'row', justifyContent: 'space-between' },
   goalLabel: { color: INK.muted, fontSize: 13, fontWeight: '600' },
   goalValue: { color: INK.text, fontSize: 13, fontWeight: '700' },
   goalTrack: { backgroundColor: INK.cardAlt, borderRadius: 99, height: 10, overflow: 'hidden' },
-  goalFill: { backgroundColor: '#FFD166', borderRadius: 99, height: 10 },
+  goalFill: { backgroundColor: INK.gold, borderRadius: 99, height: 10 },
+  reward: {
+    alignItems: 'center',
+    backgroundColor: INK.card,
+    borderColor: INK.border,
+    borderRadius: 14,
+    borderWidth: 2,
+    flexDirection: 'row',
+    gap: 12,
+    padding: 14,
+  },
+  rewardReady: { backgroundColor: '#2a2142', borderColor: INK.gold },
+  rewardIcon: { fontSize: 28 },
+  rewardText: { flex: 1, gap: 2 },
+  rewardTitle: { color: INK.text, fontSize: 16, fontWeight: '700' },
+  rewardSub: { color: INK.muted, fontSize: 13 },
+  rewardSubReady: { color: INK.gold, fontWeight: '700' },
   langRow: { gap: 10, paddingRight: 4 },
   langCard: {
     alignItems: 'center',

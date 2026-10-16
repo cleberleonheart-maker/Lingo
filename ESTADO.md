@@ -80,7 +80,6 @@ em checagem de tipo; só aparece quando alguém faz a lição e olha o resultado
 
 ## Pendências
 
-- Recompensa diária do Duolingo (o "baú" de XP do dia).
 - Lições 2 e as provas ainda são fixas (sem `pool`).
 - `exercises` e `pool` duplicam o mesmo conteúdo; `drawSession` só usa o `pool`.
 - `package-lock.json` é novo e nunca foi revisado.
@@ -307,6 +306,34 @@ olho (`glint`) some em `sleep`/`happy`, que são olhos fechados. O `result.tsx`
 passou a escolher `happy`/`idle`/`sad` conforme acerto/perfeição, o `index.tsx`
 usa `sleep` quando não há streak, e o `exercise-player` reage a cada resposta.
 Continua sendo mudança visual: **não validada em dispositivo**, só no tipo/lint.
+
+## Recompensa diária (2026-10-16)
+
+"Baú" de XP do dia, inspirado no Duolingo. A lógica ficou pura em
+`src/lib/reward.ts`, coberta por `test/reward.test.ts` (total de testes: 31).
+
+- **`rewardFor(streak)`** — quanto o baú vale: `10 XP` de base + `5 XP` por dia
+  de streak, com teto de `50 XP`. Nunca é negativo.
+- **`canClaimReward(state, day)`** — só libera **depois de estudar no dia**
+  (`lastStudied === hoje`, o que também evita farmar streak abrindo o app) e
+  **uma vez por dia** (`lastReward !== hoje`).
+- **`Progress.lastReward`** — novo campo (YYYY-MM-DD do último resgate). O
+  `loadProgress` já mescla com o `emptyProgress`, então progresso antigo (sem o
+  campo) cai em `null` sozinho.
+- **`claimDailyReward()`** — num único passo da fila, credita o XP do dia, marca
+  `lastReward` e devolve `{ progress, xp }`. **Não** avança o streak: o resgate
+  depende do estudo, não o contrário. Se já foi resgatado hoje, devolve `xp: 0`.
+- **`rewardState(progress)`** — `ready` / `claimed` / `locked`, para a tela
+  inicial escolher texto e cor.
+- **`addXp`** foi refatorado sobre um `addToDay` (soma ao dia sem mexer no
+  streak), reusado pelo resgate.
+- Na tela inicial (`index.tsx`) o card 🎁 fica destacado (borda dourada) quando
+  `ready`, mostra "✅ … resgatado" quando `claimed` e "Estude hoje para abrir"
+  quando `locked`. Tudo com `accessibilityLabel`/`accessibilityState`.
+- `#FFD166` virou `INK.gold` (era literal repetido em `index.tsx` e `result.tsx`).
+
+Como os humores do avatar, isto é sobretudo UI: o que dá para garantir é a
+lógica pura (testes) e o tipo; **a aparência não foi validada em dispositivo**.
 
 ## Validador de conteúdo
 

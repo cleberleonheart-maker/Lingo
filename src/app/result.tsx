@@ -64,7 +64,7 @@ const styles = StyleSheet.create({
   text: { alignItems: 'center', gap: 6 },
   title: { color: INK.white, fontSize: 30, fontWeight: '800' },
   sub: { color: INK.muted, fontSize: 17 },
-  xpChip: { color: '#FFD166', fontSize: 16, fontWeight: '700', marginTop: 4 },
+  xpChip: { color: INK.gold, fontSize: 16, fontWeight: '700', marginTop: 4 },
   hint: { color: INK.dim, fontSize: 14, marginTop: 6, textAlign: 'center' },
   actions: { gap: 10, marginTop: 'auto' },
   primary: { backgroundColor: INK.violet, borderRadius: 16, padding: 17 },

@@ -72,6 +72,7 @@ export const INK = {
   border: '#2c2740',
   borderStrong: '#3a3350',
   violet: '#7C5CFF',
+  gold: '#FFD166',
   text: '#EDE9FE',
   white: '#ffffff',
   muted: '#a79fb8',
