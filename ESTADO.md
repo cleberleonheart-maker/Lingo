@@ -8,7 +8,8 @@ Vertical slice estilo Duolingo, montada do zero sobre o template do Expo.
 **Avatar (`src/components/avatar.tsx`)** — reescrito na técnica do TAMI
 (`/root/tami/index.html:291-325`): `View` + `LinearGradient` em vez de SVG com path
 desenhado à mão. A piscada encolhe o próprio olho com `scaleY`, então não existe
-pálpebra para alinhar — que era exatamente o bug do rework no Pulsa.
+pálpebra para alinhar — que era exatamente o bug do rework no Pulsa. Tem humores
+(`mood`: `idle`/`sleep`/`happy`/`sad`) — ver "Humores do avatar" abaixo.
 
 **Um avatar por idioma** (`src/constants/languages.ts`) — 6 idiomas, cada um com
 esfera, adereço (emoji) e bochecha próprios:
@@ -79,7 +80,7 @@ em checagem de tipo; só aparece quando alguém faz a lição e olha o resultado
 
 ## Pendências
 
-- States `.playing`/`.sleep` do avatar e a recompensa diária do Duolingo.
+- Recompensa diária do Duolingo (o "baú" de XP do dia).
 - Lições 2 e as provas ainda são fixas (sem `pool`).
 - `exercises` e `pool` duplicam o mesmo conteúdo; `drawSession` só usa o `pool`.
 - `package-lock.json` é novo e nunca foi revisado.
@@ -286,6 +287,26 @@ O validador foi de 168 para 177 exercícios e segue com **0 problemas**.
   o que se errava voltava. Agora o primeiro acerto entra no passo 1 (revisa em
   1 dia); acertos seguintes avançam (3 dias) até o item sair da fila. Errar
   reinicia no passo 0 (5 min). Total de testes foi de 18 para 25.
+
+## Humores do avatar (2026-10-16)
+
+O avatar tinha dois booleanos soltos (`blink` e `asleep`), que só davam conta de
+"piscando" e "dormindo". Virou um único `mood` (`idle`/`sleep`/`happy`/`sad`),
+mantendo o `blink` para ligar/desligar a piscada do `idle`:
+
+- **`idle`** — olho aberto (1) e piscada de sempre; é o padrão.
+- **`sleep`** — olho quase fechado (0.12), boca parada. Usado no mapa quando o
+  streak está em 0 (antes: `asleep`).
+- **`happy`** — olho na meia-lua (0.5), boca maior e um pulinho curto (`bounce`
+  com `withSequence`). Usado no resultado perfeito e na resposta certa.
+- **`sad`** — olho aberto, boca virada para baixo (borda de cima em vez da de
+  baixo). Usado no resultado ruim e na resposta errada.
+
+Só o `idle` pisca (`withRepeat`); os outros humores seguram a pose. O brilho do
+olho (`glint`) some em `sleep`/`happy`, que são olhos fechados. O `result.tsx`
+passou a escolher `happy`/`idle`/`sad` conforme acerto/perfeição, o `index.tsx`
+usa `sleep` quando não há streak, e o `exercise-player` reage a cada resposta.
+Continua sendo mudança visual: **não validada em dispositivo**, só no tipo/lint.
 
 ## Validador de conteúdo
 

@@ -54,7 +54,7 @@ export default function Home() {
         </View>
         <View style={styles.heroRight}>
           <LocalClock style={styles.clock} />
-          <Avatar asleep={!p.streak} blink language={language} size={72} />
+          <Avatar blink language={language} mood={p.streak ? 'idle' : 'sleep'} size={72} />
         </View>
       </View>
 

@@ -23,9 +23,9 @@ export default function Result() {
     <View style={[styles.root, { paddingTop: insets.top + 24, paddingBottom: insets.bottom + 24 }]}>
       <Animated.View entering={ZoomIn.duration(320)} style={styles.avatarWrap}>
         <Avatar
-          asleep={!passed}
           blink={passed}
           language={language}
+          mood={perfect ? 'happy' : passed ? 'idle' : 'sad'}
           size={140}
         />
       </Animated.View>

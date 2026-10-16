@@ -160,7 +160,12 @@ export function ExercisePlayer({ language, exercises, onFinish, onExit, onDead, 
         <Text
           accessibilityLabel={`${hearts} de ${MAX_HEARTS} vidas`}
           style={styles.hearts}>{`❤️ ${hearts}`}</Text>
-        <Avatar blink={!answered} language={language} size={34} />
+        <Avatar
+          blink={!answered}
+          language={language}
+          mood={answered ? (wasRight ? 'happy' : 'sad') : 'idle'}
+          size={34}
+        />
       </View>
 
       <Animated.View entering={FadeIn.duration(180)} key={exercise.id} style={styles.body}>

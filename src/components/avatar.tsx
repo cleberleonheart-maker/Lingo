@@ -17,17 +17,30 @@ import { LANGUAGES, type LanguageId } from '@/constants/languages';
 const BOX = 108;
 const BLINK_CYCLE = 4200;
 
+/** Expressão do avatar. */
+export type AvatarMood = 'idle' | 'sleep' | 'happy' | 'sad';
+
+/** Encolhimento dos olhos (`scaleY`) por humor. `1` = olho aberto. */
+const EYE_SQUINT: Record<AvatarMood, number> = {
+  idle: 1,
+  sleep: 0.12,
+  happy: 0.5,
+  sad: 1,
+};
+
 /**
  * Avatar no mesmo estilo do TAMI: a piscada encolhe o próprio olho com
  * `scaleY`, em vez de desenhar uma pálpebra por cima. É o motivo de aqui não
  * existir o problema de acertar a pálpebra na unha — não há nada para alinhar.
+ *
+ * Só o humor `idle` pisca: `sleep`, `happy` e `sad` mantêm a expressão parada.
  */
 export type AvatarProps = {
   language: LanguageId;
   size?: number;
   blink?: boolean;
-  /** Olhos fechados (estado de descanso). */
-  asleep?: boolean;
+  /** Expressão do mascote. `idle` (padrão) pisca; os outros ficam parados. */
+  mood?: AvatarMood;
   label?: string;
   style?: StyleProp<ViewStyle>;
 };
@@ -36,17 +49,18 @@ export function Avatar({
   language,
   size = BOX,
   blink = true,
-  asleep = false,
+  mood = 'idle',
   label,
   style,
 }: AvatarProps) {
   const lang = LANGUAGES[language];
   const scale = size / BOX;
   const lid = useSharedValue(1);
+  const bounce = useSharedValue(0);
 
   useEffect(() => {
-    if (!blink || asleep) {
-      lid.value = withTiming(asleep ? 0.12 : 1, { duration: 120 });
+    if (!blink || mood !== 'idle') {
+      lid.value = withTiming(EYE_SQUINT[mood], { duration: 140, easing: Easing.out(Easing.quad) });
       return;
     }
     lid.value = 1;
@@ -58,16 +72,30 @@ export function Avatar({
       -1,
       false
     );
-  }, [asleep, blink, lid]);
+  }, [blink, mood, lid]);
+
+  // Um pulinho curto ao comemorar, para o estado `happy` não passar batido.
+  useEffect(() => {
+    if (mood !== 'happy') return;
+    bounce.value = withSequence(
+      withTiming(1, { duration: 160, easing: Easing.out(Easing.quad) }),
+      withTiming(0, { duration: 240, easing: Easing.out(Easing.quad) })
+    );
+  }, [bounce, mood]);
 
   const leftEye = useAnimatedStyle(() => ({ transform: [{ scaleY: lid.value }] }));
   const rightEye = useAnimatedStyle(() => ({ transform: [{ scaleY: lid.value }] }));
+  const root = useAnimatedStyle(() => ({ transform: [{ translateY: -6 * scale * bounce.value }] }));
+
+  const closedEyes = mood === 'sleep' || mood === 'happy';
+  const frown = mood === 'sad';
+  const smileWidth = (mood === 'happy' ? 24 : 20) * scale;
 
   return (
-    <View
+    <Animated.View
       accessibilityLabel={label ?? `Avatar ${lang.name}`}
       accessibilityRole="image"
-      style={[styles.box, { width: size, height: size, borderRadius: size / 2 }, style]}>
+      style={[styles.box, { width: size, height: size, borderRadius: size / 2 }, style, root]}>
       <LinearGradient
         colors={lang.sphere as unknown as [string, string, ...string[]]}
         end={{ x: 1, y: 1 }}
@@ -99,7 +127,7 @@ export function Avatar({
           },
           leftEye,
         ]}>
-        {!asleep && <View style={[styles.glint, { left: 4 * scale, top: 3 * scale, width: 5 * scale, height: 5 * scale, borderRadius: 5 * scale }]} />}
+        {!closedEyes && <View style={[styles.glint, { left: 4 * scale, top: 3 * scale, width: 5 * scale, height: 5 * scale, borderRadius: 5 * scale }]} />}
       </Animated.View>
 
       <Animated.View
@@ -115,7 +143,7 @@ export function Avatar({
           },
           rightEye,
         ]}>
-        {!asleep && <View style={[styles.glint, { left: 4 * scale, top: 3 * scale, width: 5 * scale, height: 5 * scale, borderRadius: 5 * scale }]} />}
+        {!closedEyes && <View style={[styles.glint, { left: 4 * scale, top: 3 * scale, width: 5 * scale, height: 5 * scale, borderRadius: 5 * scale }]} />}
       </Animated.View>
 
       <View
@@ -145,17 +173,21 @@ export function Avatar({
         style={{
           position: 'absolute',
           left: '50%',
-          top: 60 * scale,
-          marginLeft: -10 * scale,
-          width: 20 * scale,
-          height: 9 * scale,
-          borderBottomWidth: 3 * scale,
+          top: (frown ? 62 : 60) * scale,
+          marginLeft: -smileWidth / 2,
+          width: smileWidth,
+          height: (mood === 'happy' ? 11 : 9) * scale,
+          borderTopWidth: frown ? 3 * scale : 0,
+          borderTopColor: '#33113A',
+          borderTopLeftRadius: 14 * scale,
+          borderTopRightRadius: 14 * scale,
+          borderBottomWidth: frown ? 0 : 3 * scale,
           borderBottomColor: '#33113A',
           borderBottomLeftRadius: 14 * scale,
           borderBottomRightRadius: 14 * scale,
         }}
       />
-    </View>
+    </Animated.View>
   );
 }
 
