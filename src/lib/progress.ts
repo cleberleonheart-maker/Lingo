@@ -86,54 +86,80 @@ async function save(progress: Progress) {
   }
 }
 
-/** Registra um estudo: avança o streak se for o dia (ou o dia seguinte). */
-export async function touchStudy(): Promise<Progress> {
-  const current = await loadProgress();
-  const now = today();
+// Fila de escrita: toda mutação passa por aqui, então nunca há duas operações
+// fazendo load → alterar → save ao mesmo tempo. Sem isso, um `recordAnswer` no
+// fim de um exercício podia ler o estado antes de outro `recordAnswer` gravar e
+// a última escrita apagava a primeira (lost update).
+let queue: Promise<unknown> = Promise.resolve();
 
+/** Aplica `transform` sobre o progresso atual, grava e devolve o resultado. */
+function update(transform: (current: Progress) => Progress): Promise<Progress> {
+  const run = queue.then(async () => {
+    const current = await loadProgress();
+    const next = transform(current);
+    await save(next);
+    return next;
+  });
+  // A fila precisa continuar mesmo se uma operação rejeitar.
+  queue = run.then(
+    () => undefined,
+    () => undefined
+  );
+  return run;
+}
+
+/** Streak: avança se for o dia seguinte; reinicia se o último estudo foi antes. */
+function withStudy(current: Progress, now: string): Progress {
   if (current.lastStudied === now) return current;
-
   const gap = current.lastStudied ? daysBetween(current.lastStudied, now) : Infinity;
   const streak = gap === 1 ? current.streak + 1 : 1;
-  const next: Progress = {
+  return {
     ...current,
     lastStudied: now,
     streak,
     streakBest: Math.max(streak, current.streakBest),
   };
-  await save(next);
-  return next;
+}
+
+/** Registra um estudo: avança o streak se for o dia (ou o dia seguinte). */
+export function touchStudy(): Promise<Progress> {
+  const now = today();
+  return update((current) => withStudy(current, now));
 }
 
 /** Soma XP do dia (zerando se mudou o dia) e avança o streak. */
-export async function addXp(amount: number): Promise<Progress> {
-  const current = await loadProgress();
+export function addXp(amount: number): Promise<Progress> {
   const now = today();
-  const sameDay = current.today === now;
-  const next: Progress = {
-    ...current,
-    xp: current.xp + amount,
-    today: now,
-    todayXp: (sameDay ? current.todayXp : 0) + amount,
-  };
-  await save(next);
-  return touchStudy();
+  return update((current) => {
+    const sameDay = current.today === now;
+    const withXp: Progress = {
+      ...current,
+      xp: current.xp + amount,
+      today: now,
+      todayXp: (sameDay ? current.todayXp : 0) + amount,
+    };
+    return withStudy(withXp, now);
+  });
 }
 
-export async function completeLesson(lessonId: string): Promise<Progress> {
-  const current = await loadProgress();
-  if (!current.lessons.includes(lessonId)) {
-    await save({ ...current, lessons: [...current.lessons, lessonId] });
-  }
-  return touchStudy();
+export function completeLesson(lessonId: string): Promise<Progress> {
+  const now = today();
+  return update((current) => {
+    const withLesson = current.lessons.includes(lessonId)
+      ? current
+      : { ...current, lessons: [...current.lessons, lessonId] };
+    return withStudy(withLesson, now);
+  });
 }
 
-export async function completeExam(examId: string): Promise<Progress> {
-  const current = await loadProgress();
-  if (!current.exams.includes(examId)) {
-    await save({ ...current, exams: [...current.exams, examId] });
-  }
-  return touchStudy();
+export function completeExam(examId: string): Promise<Progress> {
+  const now = today();
+  return update((current) => {
+    const withExam = current.exams.includes(examId)
+      ? current
+      : { ...current, exams: [...current.exams, examId] };
+    return withStudy(withExam, now);
+  });
 }
 
 /** Os ids de lição já carregam o idioma (`en-u1-l1`), então não precisa de prefixo. */
@@ -157,27 +183,27 @@ export function isDue(progress: Progress, key: string) {
 }
 
 /** Registra o resultado de um exercício e reagenda a revisão espaçada. */
-export async function recordAnswer(key: string, correct: boolean): Promise<Progress> {
-  const current = await loadProgress();
-  const existing = current.reviews[key];
+export function recordAnswer(key: string, correct: boolean): Promise<Progress> {
+  const now = Date.now();
+  return update((current) => {
+    const existing = current.reviews[key];
 
-  if (!correct) {
-    const reviews = { ...current.reviews, [key]: { step: 0, due: Date.now() + REVIEW_STEPS[0] } };
-    const next = { ...current, reviews };
-    await save(next);
-    return next;
-  }
+    if (!correct) {
+      return {
+        ...current,
+        reviews: { ...current.reviews, [key]: { step: 0, due: now + REVIEW_STEPS[0] } },
+      };
+    }
 
-  if (!existing) return current;
+    if (!existing) return current;
 
-  const reviews = { ...current.reviews };
-  const step = existing.step + 1;
-  if (step >= REVIEW_STEPS.length) {
-    delete reviews[key];
-  } else {
-    reviews[key] = { step, due: Date.now() + REVIEW_STEPS[step] };
-  }
-  const next = { ...current, reviews };
-  await save(next);
-  return next;
+    const reviews = { ...current.reviews };
+    const step = existing.step + 1;
+    if (step >= REVIEW_STEPS.length) {
+      delete reviews[key];
+    } else {
+      reviews[key] = { step, due: now + REVIEW_STEPS[step] };
+    }
+    return { ...current, reviews };
+  });
 }

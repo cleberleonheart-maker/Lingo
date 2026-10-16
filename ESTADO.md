@@ -65,12 +65,25 @@ Corrigido trocando por `useFocusEffect`, que revalida a cada ganho de foco.
 **O typecheck passava limpo com esse bug presente.** Erro de lógica não aparece
 em checagem de tipo; só aparece quando alguém faz a lição e olha o resultado.
 
+## Feito depois do estado de 2026-09-29
+
+- **Vidas/coração** — 3 por sessão (`MAX_HEARTS`). Errar desconta; zerar encerra a
+  lição sem contá-la como concluída.
+- **XP e meta diária** — `addXp`, `XP_PER_CORRECT` e `DAILY_GOAL`; o mapa mostra
+  `⭐ XP` e a barra "Meta de hoje", e a tela de resultado mostra o XP da prova.
+- **Repetição espaçada (nível 3)** — `REVIEW_STEPS` (5 min, 1 dia, 3 dias),
+  `recordAnswer`, `isDue` e `reviewKey`; `buildSession` põe os exercícios vencidos
+  na frente do sorteio.
+- **Lint, testes e CI** — `eslint.config.js`, `test/content.test.ts`, validador de
+  conteúdo e `.github/workflows/ci.yml` (typecheck + lint + test no Node 22).
+
 ## Pendências
 
-- Faltam coração, states `.playing`/`.sleep` e a recompensa diária do Duolingo.
-- A repetição espaçada (nível 3): exercício errado volta em 5 min, 1 dia, 3 dias.
-  O `pool` do nível 2 já é a base disso.
+- States `.playing`/`.sleep` do avatar e a recompensa diária do Duolingo.
 - Lições 2 e as provas ainda são fixas (sem `pool`).
+- Ao morrer (vidas a zero) o XP do que foi acertado é descartado.
+- Acertar de primeira não entra na revisão espaçada — só o que se erra volta.
+- `exercises` e `pool` duplicam o mesmo conteúdo; `drawSession` só usa o `pool`.
 - O `avatar.tsx` antigo (SVG) foi substituído; o `react-native-svg` continua
   instalado e sem uso.
 - O campo `to` do tipo `translate` não é usado no render.
@@ -201,14 +214,35 @@ Os 5 idiomas novos seguem o mesmo formato: l1 = 4 exercícios + `pool` +
 
 O validador foi de 168 para 177 exercícios e segue com **0 problemas**.
 
+## Robustez e ferramentas (2026-10-15)
+
+- **Escritas serializadas no `progress.ts`** — antes, cada operação fazia
+  `loadProgress()` → alterar → `save()`. Como o player dispara um
+  `recordAnswer` por exercício, duas respostas rápidas podiam ler o mesmo estado
+  e a última escrita apagava a outra (**lost update** silencioso). Agora toda
+  mutação passa por uma fila (`update`), então nunca há duas operações
+  intercaladas. `touchStudy`/`addXp`/`completeLesson`/`completeExam` viraram
+  composições de funções puras (`withStudy`) para não deadlockar dentro da fila.
+- **Validador de conteúdo movido para o repo** (ver seção abaixo).
+- **`engines` no `package.json`** — `node >=20.19.4`. Com Node 18 o Expo SDK 57
+  morre com `configs.toReversed is not a function`, erro que não aponta para a
+  causa; agora o `npm` avisa antes.
+
 ## Validador de conteúdo
 
-`/tmp/opencode/validate-content.cjs` (fora do repo, é ferramenta de trabalho).
-Compila os `content*.ts` e checa o que o typecheck não pega: opção correta
-dentro do próprio enunciado, `fill` com resposta vazia, `translate` com `from`
-do mesmo idioma da resposta, coluna de `match` repetida, banco menor que a
-sessão, ids duplicados, e varredura de caractere de outro alfabeto. As regras 1
-e 2 acima foram escritas a partir dos bugs que ele achou.
+Mora no repo: `src/lib/validate-content.ts` (`findContentProblems()`), coberto
+por `test/validator.test.ts` e rodando no `npm test`. Checa o que o typecheck não
+pega: opção correta dentro do próprio enunciado, `fill` com resposta vazia,
+`translate` com `from` do mesmo idioma da resposta, coluna de `match` repetida,
+banco menor que a sessão (`perSession > pool`), ids duplicados e varredura de
+caractere de outro alfabeto. As regras 1 e 2 acima foram escritas a partir dos
+bugs que ele achou.
+
+A versão anterior era um script solto em `/tmp/opencode/validate-content.cjs` —
+fora do repo, perdível, e que **não validava as provas**: chamava
+`checkEx(unit.exam)` com o objeto da unidade (que não é um `Exercise`), então os
+exercícios da prova nunca eram checados. Agora o teste itera
+`unit.exam.exercises`.
 
 ## Como rodar
 

@@ -40,6 +40,9 @@
     "eslint-config-expo": "^57.0.2",
     "typescript": "~6.0.3"
   },
+  "engines": {
+    "node": ">=20.19.4"
+  },
   "scripts": {
     "start": "expo start",
     "reset-project": "node ./scripts/reset-project.js",
@@ -47,7 +50,7 @@
     "ios": "expo start --ios",
     "web": "expo start --web",
     "lint": "expo lint",
-    "test": "esbuild test/content.test.ts --bundle --platform=node --format=esm --alias:@=./src --outfile=.test-build/content.test.mjs && node --test .test-build/content.test.mjs",
+    "test": "esbuild test/content.test.ts test/validator.test.ts --bundle --platform=node --format=esm --alias:@=./src --outdir=.test-build --out-extension:.js=.mjs && node --test .test-build/content.test.mjs .test-build/validator.test.mjs",
     "typecheck": "tsc --noEmit"
   },
   "private": true
