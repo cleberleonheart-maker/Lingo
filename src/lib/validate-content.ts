@@ -75,7 +75,7 @@ export function findContentProblems(): string[] {
   }
 
   function checkAlphabet(ex: Exercise, where: string, file: string) {
-    const texts: Array<[string, string]> = [];
+    const texts: [string, string][] = [];
     if (ex.kind === 'choice') {
       texts.push(['prompt', ex.prompt]);
       ex.options.forEach((o) => texts.push(['option', o.text]));

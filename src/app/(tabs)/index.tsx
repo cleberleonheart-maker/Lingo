@@ -65,7 +65,10 @@ export default function Home() {
             {Math.min(p.todayXp, p.dailyGoal)}/{p.dailyGoal} XP
           </Text>
         </View>
-        <View style={styles.goalTrack}>
+        <View
+          accessibilityRole="progressbar"
+          accessibilityValue={{ min: 0, max: p.dailyGoal, now: Math.min(p.todayXp, p.dailyGoal) }}
+          style={styles.goalTrack}>
           <View
             style={[styles.goalFill, { width: `${Math.min(100, (p.todayXp / (p.dailyGoal || 1)) * 100)}%` }]}
           />
@@ -78,6 +81,7 @@ export default function Home() {
           return (
             <Pressable
               accessibilityRole="button"
+              accessibilityState={{ selected: active }}
               key={item.id}
               // Grava na URL, nao so no estado: se so no estado, um F5 ou um
               // link direto volta para o ingles mesmo com o frances selecionado.

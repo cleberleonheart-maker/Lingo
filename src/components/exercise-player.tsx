@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
+import { AccessibilityInfo, Platform, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as Speech from 'expo-speech';
 import Animated, { FadeIn } from 'react-native-reanimated';
@@ -65,6 +65,22 @@ export function ExercisePlayer({ language, exercises, onFinish, onExit, onResult
       Speech.stop();
     };
   }, [exercise, language]);
+
+  // O iOS não tem `accessibilityLiveRegion`: anuncia o resultado na mão para o
+  // VoiceOver. No Android/web a faixa de feedback já é lida sozinha.
+  useEffect(() => {
+    if (!done || Platform.OS !== 'ios') return;
+    if (dead) {
+      AccessibilityInfo.announceForAccessibility(
+        'Acabaram as vidas. Volte mais tarde e refaça esta lição.'
+      );
+      return;
+    }
+    const ok = isAnswerCorrect(exercise, picked ?? given, linked);
+    AccessibilityInfo.announceForAccessibility(
+      ok ? 'Isso aí!' : `Quase! ${showAnswer(exercise)}`
+    );
+  }, [done, dead, exercise, picked, given, linked]);
 
   function reset() {
     setGiven('');
@@ -135,13 +151,18 @@ export function ExercisePlayer({ language, exercises, onFinish, onExit, onResult
   return (
     <View style={[styles.root, { paddingTop: insets.top + 8, paddingBottom: insets.bottom + 12 }]}>
       <View style={styles.topBar}>
-        <Pressable accessibilityLabel="Sair" onPress={onExit} style={styles.iconBtn}>
+        <Pressable accessibilityLabel="Sair" accessibilityRole="button" onPress={onExit} style={styles.iconBtn}>
           <Text style={styles.icon}>✕</Text>
         </Pressable>
-        <View style={styles.track}>
+        <View
+          accessibilityRole="progressbar"
+          accessibilityValue={{ min: 0, max: total, now: index + (done ? 1 : 0) }}
+          style={styles.track}>
           <View style={[styles.fill, { width: `${Math.min(100, progress * 100)}%` }]} />
         </View>
-        <Text style={styles.hearts}>{`❤️ ${hearts}`}</Text>
+        <Text
+          accessibilityLabel={`${hearts} de ${MAX_HEARTS} vidas`}
+          style={styles.hearts}>{`❤️ ${hearts}`}</Text>
         <Avatar blink={!answered} language={language} size={34} />
       </View>
 
@@ -163,6 +184,7 @@ export function ExercisePlayer({ language, exercises, onFinish, onExit, onResult
               return (
                 <Pressable
                   accessibilityRole="button"
+                  accessibilityState={{ selected, disabled: answered }}
                   disabled={answered}
                   key={option.id}
                   onPress={() => {
@@ -209,7 +231,9 @@ export function ExercisePlayer({ language, exercises, onFinish, onExit, onResult
                 const selected = matchSel === pair.left;
                 return (
                   <Pressable
+                    accessibilityLabel={mine ? `${pair.left}, ligado a ${mine}` : pair.left}
                     accessibilityRole="button"
+                    accessibilityState={{ selected, disabled: answered }}
                     disabled={answered}
                     key={pair.left}
                     onPress={() => tapMatch('left', pair.left)}
@@ -226,6 +250,7 @@ export function ExercisePlayer({ language, exercises, onFinish, onExit, onResult
                 return (
                   <Pressable
                     accessibilityRole="button"
+                    accessibilityState={{ selected: Boolean(owner), disabled: answered }}
                     disabled={answered}
                     key={right}
                     onPress={() => tapMatch('right', right)}
@@ -241,13 +266,16 @@ export function ExercisePlayer({ language, exercises, onFinish, onExit, onResult
 
       <Animated.View entering={FadeIn.duration(140)} style={styles.footer}>
         {dead ? (
-          <View style={[styles.banner, styles.bannerBad]}>
+          <View accessible accessibilityLiveRegion="polite" style={[styles.banner, styles.bannerBad]}>
             <Text style={styles.bannerTitle}>Acabaram as vidas 💔</Text>
             <Text style={styles.bannerBody}>Volte mais tarde e refaça esta lição.</Text>
           </View>
         ) : (
           answered && (
-            <View style={[styles.banner, wasRight ? styles.bannerOk : styles.bannerBad]}>
+            <View
+              accessible
+              accessibilityLiveRegion="polite"
+              style={[styles.banner, wasRight ? styles.bannerOk : styles.bannerBad]}>
               <Text style={styles.bannerTitle}>{wasRight ? 'Isso aí!' : 'Quase!'}</Text>
               {!wasRight && <Text style={styles.bannerBody}>{showAnswer(exercise)}</Text>}
             </View>
@@ -255,6 +283,7 @@ export function ExercisePlayer({ language, exercises, onFinish, onExit, onResult
         )}
         <Pressable
           accessibilityRole="button"
+          accessibilityState={{ disabled: !answered && !dead }}
           disabled={!answered && !dead}
           onPress={() => (dead ? onExit() : advance(wasRight))}
           style={[styles.cta, !answered && !dead && styles.ctaOff]}>

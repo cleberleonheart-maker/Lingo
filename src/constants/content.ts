@@ -20,7 +20,6 @@ export type Exercise =
       kind: 'translate';
       id: string;
       from: string;
-      to: string;
       accept: string[];
       label?: string;
       hint?: string;
@@ -112,7 +111,6 @@ const EN: Course = {
               kind: 'translate',
               id: 'e2',
               from: 'Olá!',
-              to: 'inglês',
               accept: ['hello', 'hi'],
               hint: 'O primeiro "olá" que todo mundo aprende.',
             },
@@ -173,35 +171,30 @@ const EN: Course = {
               kind: 'translate',
               id: 'p4',
               from: 'Olá!',
-              to: 'inglês',
               accept: ['hello', 'hi', 'hey'],
             },
             {
               kind: 'translate',
               id: 'p5',
               from: 'Bom dia!',
-              to: 'inglês',
               accept: ['good morning', 'goodmorning'],
             },
             {
               kind: 'translate',
               id: 'p6',
               from: 'Boa noite!',
-              to: 'inglês',
               accept: ['good night', 'goodnight'],
             },
             {
               kind: 'translate',
               id: 'p7',
               from: 'Até logo!',
-              to: 'inglês',
               accept: ['goodbye', 'bye', 'see you', 'seeyou', 'good bye'],
             },
             {
               kind: 'translate',
               id: 'p8',
               from: 'Até amanhã!',
-              to: 'inglês',
               accept: ['see you tomorrow', 'seeyoutomorrow', 'see you tomorrow!'],
             },
             {
@@ -271,7 +264,6 @@ const EN: Course = {
               kind: 'translate',
               id: 'e2',
               from: 'Meu nome é Ana.',
-              to: 'inglês',
               accept: ['my name is ana', 'mynameisana', "my name's ana", "myname'sana"],
             },
             {
@@ -297,7 +289,6 @@ const EN: Course = {
               kind: 'translate',
               id: 'e5',
               from: 'Prazer em conhecê-lo.',
-              to: 'inglês',
               accept: ['nice to meet you', 'nicetomeetyou'],
             },
             {
@@ -399,21 +390,18 @@ const EN: Course = {
               kind: 'translate',
               id: 'p6',
               from: 'Sou do Brasil.',
-              to: 'inglês',
               accept: ['i am from brazil', 'imfrombrazil', "i'm from brazil", "i'mfrombrazil"],
             },
             {
               kind: 'translate',
               id: 'p7',
               from: 'Eu falo inglês.',
-              to: 'inglês',
               accept: ['i speak english', 'ispeakenglish'],
             },
             {
               kind: 'translate',
               id: 'p8',
               from: 'Eu moro no Brasil.',
-              to: 'inglês',
               accept: ['i live in brazil', 'iliveinbrazil'],
             },
             {
@@ -459,7 +447,6 @@ const EN: Course = {
             kind: 'translate',
             id: 'q2',
             from: 'Meu nome é Pedro.',
-            to: 'inglês',
             accept: ['my name is pedro', 'mynameispedro', "my name's pedro", "myname'spedro"],
           },
           {
@@ -485,7 +472,6 @@ const EN: Course = {
             kind: 'translate',
             id: 'q5',
             from: 'Até logo!',
-            to: 'inglês',
             accept: ['goodbye', 'bye', 'see you', 'seeyou', 'good bye'],
           },
         ],

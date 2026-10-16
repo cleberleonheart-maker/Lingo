@@ -30,7 +30,7 @@ test('shuffle mantém os mesmos itens e o mesmo tamanho', () => {
 });
 
 test('checkAnswer em translate aceita variações de acento, caixa e espaço', () => {
-  const ex: Exercise = { kind: 'translate', id: 't', from: 'x', to: 'y', accept: ['Hola', 'Buenas'] };
+  const ex: Exercise = { kind: 'translate', id: 't', from: 'x', accept: ['Hola', 'Buenas'] };
   assert.equal(checkAnswer(ex, 'hola'), true);
   assert.equal(checkAnswer(ex, 'HOLA'), true);
   assert.equal(checkAnswer(ex, '  hola '), true);

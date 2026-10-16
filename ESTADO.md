@@ -84,12 +84,11 @@ em checagem de tipo; só aparece quando alguém faz a lição e olha o resultado
 - Ao morrer (vidas a zero) o XP do que foi acertado é descartado.
 - Acertar de primeira não entra na revisão espaçada — só o que se erra volta.
 - `exercises` e `pool` duplicam o mesmo conteúdo; `drawSession` só usa o `pool`.
-- O `avatar.tsx` antigo (SVG) foi substituído; o `react-native-svg` continua
-  instalado e sem uso.
-- O campo `to` do tipo `translate` não é usado no render.
 - `package-lock.json` é novo e nunca foi revisado.
 - Áudio do japonês depende de voz instalada no `expo-speech`; não confirmado em
   hardware real.
+- Acessibilidade: barra de progresso, vidas, opções/chips e faixas de feedback
+  já foram tratadas (2026-10-16); falta revisar o foco do botão "Continuar".
 
 ## Bugs de conteúdo achados rodando (2026-09-29, tarde)
 
@@ -239,6 +238,24 @@ O validador foi de 168 para 177 exercícios e segue com **0 problemas**.
   `local-clock` e o `_layout` trocaram os literais (`#12101a`, `#7C5CFF`…) pelas
   chaves de `INK` (`@/constants/theme`). Cores que não existem no `INK`
   (`#FFD166`, `#2a2142`, `#6f6880`, `#9a92ad`, `#c9c2d8`) continuam literais.
+
+## Acessibilidade, limpeza e ambiente (2026-10-16)
+
+- **Acessibilidade no player e no mapa** — a barra de progresso e a meta diária
+  viraram `accessibilityRole="progressbar"` com `accessibilityValue`; as opções e
+  os chips do `match` ganharam `accessibilityState` (`selected`/`disabled`); o
+  contador de vidas tem `accessibilityLabel` ("2 de 3 vidas"); a faixa de
+  feedback é `accessibilityLiveRegion="polite"` (Android/web) e o iOS recebe
+  `AccessibilityInfo.announceForAccessibility` (que não tem `liveRegion`).
+- **Campo `to` removido do `translate`** — era dado morto: aparecia em ~78
+  lugares e nunca era lido (nem no render, nem no validador). Saiu do tipo em
+  `content.ts` e dos 6 arquivos de conteúdo; o teste que o usava foi corrigido.
+- **`react-native-svg` removido** — estava no `package.json` sem nenhum uso em
+  `src`. `npm uninstall` tirou ele e 12 dependências exclusivas (css-select,
+  css-tree, domhandler…); o lockfile caiu 154 linhas.
+- **`engines` corrigido para `node >=22.13.0`** — era `>=20.19.4`, mas o Expo SDK
+  57 exige Node 22.13.x no mínimo (tabela oficial dos docs versionados). O CI já
+  usa Node 22.
 
 ## Validador de conteúdo
 
